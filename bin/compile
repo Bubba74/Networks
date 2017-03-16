@@ -1,6 +1,6 @@
 
 echo "Compiling ../src"
 
-javac -d . ../src/*
+javac -d . ../src/Main.java
 
 echo "Done"
