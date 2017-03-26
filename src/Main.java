@@ -11,7 +11,7 @@ public class Main {
 	public static double finalSum;
 	public static double output;
 
-	public static double learningRate = 5;
+	public static double learningRate = 0.04;
 	
 	public static double cumulativeError = 0;
 	public static int count = 0;
@@ -32,11 +32,11 @@ public class Main {
 			
 			x = Math.random();
 			y = Math.random();
-			ans = ( 0.3 < x && x < 0.6 && 0.7 < y && y < 0.85 ? 0.9 : 0.1 );
+			ans = ( 0.15 < x && x < 0.85 && 0.15 < y && y < 0.85 ? 0.9 : 0.1 );
 			
 			fill(x, y);
 
-			cumulativeError += (ans-output);
+			cumulativeError += Math.abs(ans-output);
 			count++;
 			if (i%period==0)
 				System.out.printf("%.3f%%   Target: %.1f\tOutput: %f\t Error: %9f\tAvg. Error: %f\n",100*(float)i/len,ans, output, ans-output, cumulativeError / count);
@@ -53,15 +53,17 @@ public class Main {
 		//TODO Use the Delta rule (see wikipedia)
 
 		//Train output
+		double outputError = (ans-output);
 		for (int i=0;i<weights2.length;i++){
-			double delta = (ans-output)*dsigma(finalSum)*layerOutputs[i];
+			double delta = outputError*dsigma(finalSum)*layerOutputs[i];
 			weights2[i] += learningRate*delta;
 		}
 
 		//Train mid-layer
 		for (int i=0;i<layerOutputs.length;i++){
 			for (int j=0;j<2;j++){
-				double delta = (ans-layerOutputs[i])*dsigma(layerSums[i])*inputs[j];
+				double error = -outputError;
+				double delta = error*dsigma(layerSums[i])*inputs[j];
 				weights1[j*4+i] += learningRate*delta;
 			}
 		}
@@ -76,7 +78,7 @@ public class Main {
 
 		for (int i=0;i<2;i++)
 			for (int w=0;w<4;w++)
-				layerSums[w] += inputs[i]*weights1[i*w];
+				layerSums[w] += inputs[i]*weights1[4*i+w];
 
 		for (int o=0;o<4;o++)
 			layerOutputs[o] = sigma(layerSums[o]);
