@@ -11,10 +11,10 @@ public class Main {
 	public static double finalSum;
 	public static double output;
 
-	public static double learningRate = 0.04;
+	public static double learningRate = 0.5;
 	
-	public static double cumulativeError = 0;
-	public static int count = 0;
+	public static double[] last10000errors = new double[10000];
+	public static int index = 0;
 
 	public static void main (String[] args){
 
@@ -32,16 +32,21 @@ public class Main {
 			
 			x = Math.random();
 			y = Math.random();
-			ans = ( 0.15 < x && x < 0.85 && 0.15 < y && y < 0.85 ? 0.9 : 0.1 );
+
+//			x = 0.4;
+//			y = 0.4;
+//			ans = ( 0.15 < x && x < 0.85 && 0.15 < y && y < 0.85 ? 0.9 : 0.1 );
+			ans = (0.5 < x ? 0.9 : 0.1);
 			
 			fill(x, y);
 
-			cumulativeError += Math.abs(ans-output);
-			count++;
-			if (i%period==0)
-				System.out.printf("%.3f%%   Target: %.1f\tOutput: %f\t Error: %9f\tAvg. Error: %f\n",100*(float)i/len,ans, output, ans-output, cumulativeError / count);
+			last10000errors[index++] = Math.abs(ans-output);
+			if (index == 10000) index = 0;
 
-			train (ans);
+			if (i%period==0)
+				System.out.printf("%.3f%%   Target: %.1f\tOutput: %f\t Error: %9f\tAvg. Error: %f\n",100*(float)i/len,ans, output, ans-output, sumArr(last10000errors) / (i<10000?index:10000));
+
+			train2 (ans);
 		}
 
 		long end = System.currentTimeMillis();
@@ -49,15 +54,34 @@ public class Main {
 		System.out.printf("Duration: %d\n",end-start);
 	}//main method
 
+	public static void train2 (double ans){
+
+		double outputDelta = (output-ans)*dsigma(finalSum);
+		for (int l=0;l<4;l++){
+			double weightDelta = outputDelta*layerOutputs[l];
+			weights2[l] -= learningRate*weightDelta;
+		}
+			
+		//Train mid-layer
+		for (int i=0;i<inputs.length;i++){
+			for (int l=0; l<layerOutputs.length; l++){
+				//outputDelta
+				double weight1Delta = outputDelta*weights2[l]  *dsigma(layerSums[l])  *inputs[i];
+				weights1[4*i+l] -= learningRate*weight1Delta;
+			}
+		}
+	}//train2 method
+
 	public static void train (double ans){
 		//TODO Use the Delta rule (see wikipedia)
 
 		//Train output
-		double outputError = (ans-output);
+		double outputError = -(ans-output);
 		for (int i=0;i<weights2.length;i++){
 			double delta = outputError*dsigma(finalSum)*layerOutputs[i];
 			weights2[i] += learningRate*delta;
 		}
+
 
 		//Train mid-layer
 		for (int i=0;i<layerOutputs.length;i++){
@@ -67,7 +91,8 @@ public class Main {
 				weights1[j*4+i] += learningRate*delta;
 			}
 		}
-	}//training
+
+	}//train method
 
 	public static void fill (double x, double y){
 
@@ -116,8 +141,14 @@ public class Main {
 	public static double sigma (double x){
 		return  (1/(1+Math.exp(-x)));
 	}
-	
 	public static double dsigma (double x){
 		return sigma(x) * (1-sigma(x));
 	}
+
+	public static double sumArr (double[] arr){
+		double sum = 0;
+		for (double d : arr) sum += d;
+		return sum;
+	}
+
 }//Network
