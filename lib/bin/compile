@@ -1,0 +1,6 @@
+
+echo "Compiling ../"
+
+javac -d . ../*.java
+
+echo "Done"

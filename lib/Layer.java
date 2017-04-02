@@ -6,6 +6,8 @@ public class Layer {
 		outs -- The outputs of this layer == activation (nets)
 	*/	
 
+	boolean isInputLayer;
+
 	int size;
 	double[] nets;
 	double[] outs;
@@ -15,6 +17,9 @@ public class Layer {
 		num -- Size of layer
 	*/
 	public Layer (int num){
+
+		isInputLayer = false;
+
 		size = num;
 
 		nets = new double[size];
@@ -29,7 +34,55 @@ public class Layer {
 		}
 	}//Layer constructor
 
-	
+	public void setInputLayer( boolean isInput){
+		isInputLayer = isInput;
+	}//setInputLayer
+
+	//----------Interface for use-------------//
+
+	public void inputAll (double[] newNets){
+		clear();
+
+		if (newNets.length != size){
+			System.out.println("ERROR: Layer: Improper # of inputs");
+			return;
+		}
+
+		for (int i=0; i<size; i++){
+			nets[i] = newNets[i];
+		}
+
+		activate();
+
+	}//input values
+
+	public double[] getNets (){
+		return nets;
+	}//getNets
+	public double[] getOuts (){
+		return outs;
+	}//getOutputs
+	public double[] getDeltas (){
+		return deltas;
+	}//getDeltas
+
+	public void calculateDeltas (){
+		
+	}//calculateDeltas
+
+	public String toString (){
+		String str = "";
+		for (int i=0; i<size; i++){
+			str += String.format("  [%4.2f ==> %4.2f]", nets[i], outs[i]);
+		}
+		str += "\n";
+
+		return str;
+	}//toString
+
+
+
+
 	/*
 		Called once at the start of each forward pass.
 
@@ -46,12 +99,16 @@ public class Layer {
 		}
 	}//clear method
 
-	/*
-		Called once to confine the net sums into a 0 to 1 output
-	*/
-	public void activate (){
-		for (int i=0; i<size; i++){
-			outs[i] = activation (nets[i]);
+
+	// Called once to confine the net sums into a 0 to 1 output
+	private void activate (){
+		//If the layer is an input layer, no activation is applied to the inputs
+		if (isInputLayer){
+			for (int i=0; i<size; i++)
+				outs[i] = nets[i];
+		} else {
+			for (int i=0; i<size; i++)
+				outs[i] = activation (nets[i]);
 		}
 	}//activate method
 
@@ -62,11 +119,11 @@ public class Layer {
 		--------
 		1 + e^-x
 	*/
-	public double activation (double net){
+	private double activation (double net){
 		return (1 / ( 1+Math.exp(-net) ));
 	}//activation function
 
-	public double dActivation (double net){
+	private double dActivation (double net){
 		return activation(net) * (1-activation(net));
 	}//derivative of activation function 
 
