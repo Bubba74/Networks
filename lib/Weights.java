@@ -1,6 +1,7 @@
 
 public class Weights {
 	
+	private float learningRate = 0.5f;
 	Layer inputLayer, outputLayer;
 	int left, right;
 
@@ -34,6 +35,18 @@ public class Weights {
 		outputLayer.inputAll(outputs);
 	
 	}//update
+
+	public void feedBackwards (){
+		double outputsDeltas = outputLayer.getDeltas();
+		double inputs = inputLayer.getOuts();
+	
+		for (int i=0; i<left; i++){
+			for (int j=0; j<right; j++){
+				deltas[i][j] = inputs[i]*outputsDeltas[j];
+				weights[i][j] -= deltas[i][j]*learningRate;
+			}
+		}
+	}//feedBackwards
 		
 
 	public String toString (){

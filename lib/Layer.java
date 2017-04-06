@@ -11,6 +11,9 @@ public class Layer {
 	int size;
 	double[] nets;
 	double[] outs;
+
+	double[] dnets;
+	double[] douts;
 	double[] deltas;
 
 	/*
@@ -24,11 +27,17 @@ public class Layer {
 
 		nets = new double[size];
 		outs = new double[size];
+
+		dnets = new double[size];
+		douts = new double[size];
 		deltas = new double[size];
 
 		for (int i=0; i<size; i++){
 			nets[i] = 0;
 			outs[i] = 0;
+
+			nets[i] = 0;
+			douts[i] = 0;
 
 			deltas[i] = 0;
 		}
@@ -62,12 +71,29 @@ public class Layer {
 	public double[] getOuts (){
 		return outs;
 	}//getOutputs
+
+	public double[] getDnets (){
+		return dnets;
+	}//getDnets
+	public double[] getDOuts (){
+		return douts;
+	}//getDouts
 	public double[] getDeltas (){
 		return deltas;
 	}//getDeltas
 
-	public void calculateDeltas (){
-		
+	public void calculateDeltas (double[] targets){
+		if (isInputLayer){
+			//No need for calculating deltas
+			return;
+		}
+
+		for (int i=0; i<size; i++){
+			douts[i] = outs[i]-targets[i];
+			dnets[i] = outs[i]*(1-outs[i]);
+			deltas[i] = douts[i]*dnets[i];
+		}
+
 	}//calculateDeltas
 
 	public String toString (){
@@ -79,8 +105,6 @@ public class Layer {
 
 		return str;
 	}//toString
-
-
 
 
 	/*

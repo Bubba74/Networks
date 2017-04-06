@@ -9,8 +9,10 @@ public class Network {
 	private Weights[] weights;
 	private Layer[] layers;
 
-	private void loadInputs (double[] inputs){
+	public void loadInputs (double[] inputs){
 		layers[0].inputAll(inputs);
+
+		feedForward();
 	}//loadInputs
 
 	private void feedForward (){
@@ -24,12 +26,9 @@ public class Network {
 
 	}//feedForward
 
-	public void load (double[] inputs){
-		loadInputs (inputs);
-
-		feedForward();
-	}//load
-
+	public void train (double[] targets){
+		layers[layers.length-1].calculateDeltas(targets);	
+	}//train
 
 
 
