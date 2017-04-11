@@ -16,3 +16,9 @@ USE IT!!!
 	- AND, OR, and XOR gates
 		- Testing, mostly
 	- Fun stuff
+
+
+
+Current State:
+	- Error calculation for last layer should work
+	- Still need to work in an iterative solution that works for however many layers

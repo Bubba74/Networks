@@ -3,7 +3,6 @@ public class Network {
 	
 	private static int networksCreated = 0;
 
-
 	private String name;
 
 	private Weights[] weights;
@@ -27,7 +26,13 @@ public class Network {
 	}//feedForward
 
 	public void train (double[] targets){
+		//Input targets into output layer
+
+		double[] errors = layers[layers.length-1].getErrors(targets);
+
 		layers[layers.length-1].calculateDeltas(targets);	
+
+
 	}//train
 
 

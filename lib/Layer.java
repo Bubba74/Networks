@@ -82,19 +82,28 @@ public class Layer {
 		return deltas;
 	}//getDeltas
 
-	public void calculateDeltas (double[] targets){
+	public void calculateDeltas (double[] nextLayerDeltas){
 		if (isInputLayer){
 			//No need for calculating deltas
 			return;
 		}
 
 		for (int i=0; i<size; i++){
-			douts[i] = outs[i]-targets[i];
+			//Derivative of 
+			douts[i] = nextLayerDeltas[i];
 			dnets[i] = outs[i]*(1-outs[i]);
 			deltas[i] = douts[i]*dnets[i];
 		}
 
 	}//calculateDeltas
+
+	public double[] getDerrors (double[] targets){
+		double[] errors = new double[size];
+		for (int i=0; i<size; i++){
+			errors[i] = outs[i]- targets[i];
+		}
+		return errors;
+	}//getDerrors
 
 	public String toString (){
 		String str = "";
