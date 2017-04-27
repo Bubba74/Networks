@@ -61,8 +61,10 @@ public class Main {
 			double weightDelta = outputDelta*layerOutputs[l];
 			weights2[l] -= learningRate*weightDelta;
 		}
+		weights2[l] -= learningRate*layerOutputs[l]*(output-ans)*dsigma(finalSum);
+		weights1[4*i+l] -= learningRate*inputs[i]*dsigma(layerSums[l])*weights2[l]*   outputDelta[(output-ans)*dsigma(finalSum)];
 			
-		//Train mid-layer
+		//Train hidden-layer inputs
 		for (int i=0;i<inputs.length;i++){
 			for (int l=0; l<layerOutputs.length; l++){
 				//outputDelta

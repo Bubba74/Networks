@@ -82,18 +82,21 @@ public class Layer {
 		return deltas;
 	}//getDeltas
 
-	public void calculateDeltas (double[] nextLayerDeltas){
+	public void calculateDeltas (boolean isOutputLayer, double[] data){
 		if (isInputLayer){
 			//No need for calculating deltas
 			return;
 		}
-
-		for (int i=0; i<size; i++){
-			//Derivative of 
-			douts[i] = nextLayerDeltas[i];
-			dnets[i] = outs[i]*(1-outs[i]);
-			deltas[i] = douts[i]*dnets[i];
+		if (isOutputLayer){
+			//data[] = targets[]
+			douts[i] = (data[i]-outs[i]);
+		} else {
+			//data[] = nextLayerDeltas[]*connectionWeights
+			douts[i] = data[i];
 		}
+
+		dnets[i] = outs[i]*(1-outs[i]);
+		deltas[i] = douts[i]*dnets[i];
 
 	}//calculateDeltas
 

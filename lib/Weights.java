@@ -40,6 +40,17 @@ public class Weights {
 		double outputsDeltas = outputLayer.getDeltas();
 		double inputs = inputLayer.getOuts();
 	
+		double[] leftLayerDeltas = new double[left];
+		for (int i=0; i<left; i++){
+			for (int j=0; j<right; j++){
+				leftLayerDeltas[left] += outputsDeltas[j] * weights[i][j];
+			}
+		}
+		inputLayer.calculateDeltas(false, leftLayerDeltas);
+				
+
+
+
 		for (int i=0; i<left; i++){
 			for (int j=0; j<right; j++){
 				deltas[i][j] = inputs[i]*outputsDeltas[j];

@@ -28,10 +28,43 @@ public class Network {
 	public void train (double[] targets){
 		//Input targets into output layer
 
+	/*
 		double[] errors = layers[layers.length-1].getErrors(targets);
 
 		layers[layers.length-1].calculateDeltas(targets);	
+	
+		weightDelta = learningRate * inputNode *  dsigma(nextLayerOutput)*nextWeight              * outputDelta[ (output-ans) ];
 
+		outputDeltas = (output-ans) * dsigma(outputNodeSum);
+		outputWeights {
+			for each outputDelta:
+				outputWeights -= learningRate * input * outputDelta
+			}
+
+		hiddenDeltas = dTotalError/dHiddenOutput * dHiddenOutput / dHiddenSum;
+		dTotalError/ dHiddenOutput = dE0 / dHidden + dE1 / dHidden = dE0 / dO0 * dO0 / dN0 * dN0/dHiddenOutput ...
+		dN0/dHiddenOutput = connectionWeight
+		hiddenDeltas = outputDeltas (all) * connectionWeight
+		hiddenWeights {
+			for each hiddenDelta:
+				hiddenWeights -= learningRate * input * hiddenDelta
+			}
+
+
+		outputWeights -= learningRate * inputFromPreviousLayer * outputDeltas(each_one);
+		
+		
+		weightDelta = learningRate * input * dsigma of next Output * nextWeight * (dsigma(nextLayerOutput1) + dsigma(nextLayerOutput2) ... )
+
+		weights2[l] -= learningRate*layerOutputs[l]*   *dsigma(finalSum)                             outputDelta[(output-ans)];
+                weights1[4*i+l] -= learningRate*inputs[i]      *dsigma(layerSums[l])*weights2[l] *dsigma(finalSum) outputDelta[(output-ans)];
+	*/
+
+		layers[layers.length-1].calculateDeltas(targets);
+
+		for (int i=weights.length-1; i>=0; i--){
+			weights[i].feedBackward();
+		}
 
 	}//train
 
