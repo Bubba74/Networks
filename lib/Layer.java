@@ -89,14 +89,20 @@ public class Layer {
 		}
 		if (isOutputLayer){
 			//data[] = targets[]
-			douts[i] = (data[i]-outs[i]);
+			for (int i=0; i<size; i++){
+				douts[i] = (data[i]-outs[i]);
+				dnets[i] = nets[i]*(1-nets[i]);
+				deltas[i] = douts[i]*dnets[i];
+			}
 		} else {
 			//data[] = nextLayerDeltas[]*connectionWeights
-			douts[i] = data[i];
+			for (int i=0; i<size; i++){
+				douts[i] = data[i];
+				dnets[i] = nets[i]*(1-nets[i]);
+				deltas[i] = douts[i]*dnets[i];
+			}
 		}
 
-		dnets[i] = outs[i]*(1-outs[i]);
-		deltas[i] = douts[i]*dnets[i];
 
 	}//calculateDeltas
 
@@ -111,7 +117,7 @@ public class Layer {
 	public String toString (){
 		String str = "";
 		for (int i=0; i<size; i++){
-			str += String.format("  [%4.2f ==> %4.2f]", nets[i], outs[i]);
+			str += String.format("  [%4.4f ==> %4.4f]", nets[i], outs[i]);
 		}
 		str += "\n";
 

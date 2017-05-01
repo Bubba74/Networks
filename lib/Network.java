@@ -25,7 +25,7 @@ public class Network {
 
 	}//feedForward
 
-	public void train (double[] targets){
+	public void train (double[] targets, boolean print){
 		//Input targets into output layer
 
 	/*
@@ -60,12 +60,22 @@ public class Network {
                 weights1[4*i+l] -= learningRate*inputs[i]      *dsigma(layerSums[l])*weights2[l] *dsigma(finalSum) outputDelta[(output-ans)];
 	*/
 
-		layers[layers.length-1].calculateDeltas(targets);
+		layers[layers.length-1].calculateDeltas(true,targets);
 
 		for (int i=weights.length-1; i>=0; i--){
-			weights[i].feedBackward();
+			weights[i].feedBackwards();
 		}
 
+		if (print){
+			String output = "";
+			double[] outputs = layers[layers.length-1].getOuts();
+
+			for (int i=0; i<outputs.length; i++){
+				output += String.format("(%2.2f , %2.2f)  ", targets[i], outputs[i]);
+			}
+			
+			System.out.println(output);
+		}
 	}//train
 
 
