@@ -6,8 +6,8 @@ public class Main {
 
 		Network network = new Network(1, 1, 4, 1);
 
-		double[] inputs = {1};
-		double[] outputs = {0.72};
+		double[] inputs = {0};
+		double[] outputs = {1};
 		
 		int duration = 1000;
 		int step = 10;
@@ -37,7 +37,7 @@ public class Main {
 			else
 				network.train(outputs, false);
 
-			System.out.println(network);
+//			System.out.println(network);
 		}
 
 		end = System.currentTimeMillis();

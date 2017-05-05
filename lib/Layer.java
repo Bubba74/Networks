@@ -36,7 +36,7 @@ public class Layer {
 			nets[i] = 0;
 			outs[i] = 0;
 
-			nets[i] = 0;
+			dnets[i] = 0;
 			douts[i] = 0;
 
 			deltas[i] = 0;
@@ -91,14 +91,14 @@ public class Layer {
 			//data[] = targets[]
 			for (int i=0; i<size; i++){
 				douts[i] = (data[i]-outs[i]);
-				dnets[i] = nets[i]*(1-nets[i]);
+				dnets[i] = outs[i]*(1-outs[i]);
 				deltas[i] = douts[i]*dnets[i];
 			}
 		} else {
 			//data[] = nextLayerDeltas[]*connectionWeights
 			for (int i=0; i<size; i++){
 				douts[i] = data[i];
-				dnets[i] = nets[i]*(1-nets[i]);
+				dnets[i] = outs[i]*(1-outs[i]);
 				deltas[i] = douts[i]*dnets[i];
 			}
 		}

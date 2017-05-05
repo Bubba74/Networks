@@ -53,14 +53,15 @@ public class Weights {
 			}
 		}
 		inputLayer.calculateDeltas(false, leftLayerDeltas);
-				
+
 		double[] inputs = inputLayer.getOuts();
 		for (int i=0; i<left; i++){
 			for (int j=0; j<right; j++){
-				deltas[i][j] = inputs[i]*outputsDeltas[j];
+				deltas[i][j]   = inputs[i]*outputsDeltas[j];
 				weights[i][j] -= deltas[i][j]*learningRate;
 			}
 		}
+
 	}//feedBackwards
 		
 
