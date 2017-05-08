@@ -1,7 +1,10 @@
 
+import java.util.Random;
+
 public class Weights {
 	
-	private float learningRate = 0.05f;
+	private Random rng;
+	private float learningRate = 1f;
 	Layer inputLayer, outputLayer;
 	int left, right;
 
@@ -19,8 +22,16 @@ public class Weights {
 		weights = new double[left][right];
 		deltas = new double[left][right];
 
+		rng = new Random (System.currentTimeMillis());
+
 		reset();
 	}//Basic constructor
+
+	public Weights (int rngSeed, Layer inputs, Layer outputs){
+		this(inputs, outputs);
+		rng = new Random (rngSeed);
+		reset();
+	}//Seeded weights
 
 	public void feedForward (){
 		double[] inputs = inputLayer.getOuts();
@@ -86,7 +97,8 @@ public class Weights {
 	public void reset(){
 		for (int i=0; i<left; i++){
 			for (int j=0; j<right; j++){
-				weights[i][j] = Math.random();
+				weights[i][j] = rng.nextDouble();
+//				weights[i][j] = 0;
 				deltas[i][j] = 0;
 			}
 		}

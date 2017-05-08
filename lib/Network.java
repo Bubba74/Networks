@@ -107,12 +107,13 @@ public class Network {
 
 		//Connect the layers by a web of weights
 		for (int i=0; i<layers.length-1; i++){
-			weights[i] = new Weights(layers[i], layers[i+1]);
+			weights[i] = new Weights(24, layers[i], layers[i+1]);
 		}
 	}//initialize
 
 	public Network (int inputSize, int hiddenNumber, int hiddenSize, int outputSize){
 		initialize ("Network: "+networksCreated++, inputSize, hiddenNumber, hiddenSize, outputSize);
+		networksCreated++;
 	}//Network
 
 	public Network (String networkName, int inputSize, int hiddenNumber, int hiddenSize, int outputSize){

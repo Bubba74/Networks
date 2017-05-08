@@ -90,7 +90,7 @@ public class Layer {
 		if (isOutputLayer){
 			//data[] = targets[]
 			for (int i=0; i<size; i++){
-				douts[i] = (data[i]-outs[i]);
+				douts[i] = -(data[i]-outs[i]);
 				dnets[i] = outs[i]*(1-outs[i]);
 				deltas[i] = douts[i]*dnets[i];
 			}
