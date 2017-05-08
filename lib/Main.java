@@ -7,7 +7,7 @@ public class Main {
 	public static void main(String[] args){
 		long start, end; //Times
 
-		Network network = new Network(2, 2, 4, 2);
+		Network network = new Network(2, 1, 4, 2);
 
 		double[] inputs = {1,0};
 		double[] outputs = {0.3,0};
