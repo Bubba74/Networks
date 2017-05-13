@@ -1,12 +1,65 @@
 
 
-
 public class Track {
 
 	private Path center;
 	private Path left, right;
 	private int start_x, start_y;
 	
+
+	public double calcRay (double x, double y, double angle, int start_index){
+
+		double minimum = 500; //Greater than 0
+
+
+		double dx = Math.cos(angle);
+		double dy = Math.sin(angle);
+
+		double m = dy/dx;
+		double b = y-m*x;
+
+//		for (int i=start_index; i<center.getFilled()-1; i++){
+		for (int i=0; i<center.getFilled()-1; i++){
+			int j = i;
+			if (j < 0) j += center.getFilled();
+			
+			int x1, y1, x2, y2;
+
+			//Left Path
+			Path[] paths = {left, right};
+			
+			for (Path p: paths){
+				
+				x1 = p.getX(j); y1 = p.getY(j);
+				x2 = p.getX(j+1); y2 = p.getY(j+1);
+	
+				if (x2-x1 == 0){
+					//Check intersection of ray with vertical line segment
+					double a = x2*m+b; //Vertical intersection
+	
+					if (Math.min(y1,y2) <= a && a <= Math.max(y1,y2))
+							if ((x2-x)/dx < minimum && (x2-x)/dx >= 0)
+								minimum = (x2-x)/dx;
+				} else {
+					double m1 = (y2-y1)/(x2-x1);
+					double b1 = y1-m1*x1;
+	
+					//Ray = m*x + b;
+					//Line Segment = m1*x + b1;
+	
+					double xintercept = (b1-b)/(m-m1);
+					if (Math.min(x1,x2) <= xintercept && xintercept <= Math.max(x1,x2)){
+						double distance = (xintercept-x)/dx;
+						if ( 0 <= distance && distance < minimum) minimum = distance;
+					}
+				}//vertical line or not
+			}//loop over paths
+			
+		}//loop over vertices
+		return minimum;
+	}//calcRay
+					
+				
 	public Track (Path center_path, int radius){
 		
 		/*

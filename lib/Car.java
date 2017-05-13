@@ -16,7 +16,8 @@ public class Car {
 	
 	//Angles (relative to z) from which the car will read distance measurements
 	private static double[] rayAngles = {
-			-Math.PI/2, -Math.PI/3, -Math.PI/6, 0, Math.PI/6, Math.PI/3, Math.PI/2
+//			-Math.PI/2, -Math.PI/3, -Math.PI/6, 0, Math.PI/6, Math.PI/3, Math.PI/2
+		-6*Math.PI/12, -5*Math.PI/12, -4*Math.PI/12, -3*Math.PI/12, -2*Math.PI/12, -1*Math.PI/12, 0*Math.PI/12, 1*Math.PI/12, 2*Math.PI/12, 3*Math.PI/12, 4*Math.PI/12, 5*Math.PI/12, 6*Math.PI/12, 
 		};
 	private double[] rayDistances;
 	
@@ -56,10 +57,10 @@ public class Car {
 		}
 		index -= 3;
 		
-		for (int i=index; i<rayAngles.length; i++){
-			
+		for (int i=0; i<rayAngles.length; i++){
+			double angle = z + rayAngles[i];
+			rayDistances[i] = track.calcRay(x,y,angle, index);
 		}
-		
 		
 	}//calcRays
 
@@ -111,6 +112,12 @@ public class Car {
 	}
 	public double getVel (){
 		return vel;
+	}
+	public double[] getRayAngles (){
+		return rayAngles;
+	}
+	public double[] getRayDistances (){
+		return rayDistances;
 	}
 
 	public void resetTo (double x, double y, double z){

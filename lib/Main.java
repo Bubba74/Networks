@@ -20,21 +20,27 @@ public class Main {
 	public static void main(String[] args) {
 		initGL();
 
-		car = new CarToDraw("Test",50,50,1,0.1,0.05);
+		car = new CarToDraw("Test",50,50,1,0.1,0.02);
 		path = new PathToDraw(100);
 
 		path.addPoint(200, 100);
 
 		path.addLine(0, 200);
-		path.addArc(Math.PI/16, 16, 20);
-		
+		path.addLine(Math.PI/2, 200);
 		path.addLine(Math.PI, 200);
-		path.addArc(Math.PI/16, 16, 20);
+		path.addLine(3*Math.PI/2, 200);
+
 		
+//		path.addLine(0, 200);
+//		path.addArc(Math.PI/4, 4, 20);
+//		
+//		path.addLine(Math.PI, 200);
+//		path.addArc(Math.PI/4, 4, 20);
+//		
 		car.resetTo(path.getX(0), path.getY(0), 0);
 		
 		track = new TrackToDraw(path, 120, Color.red);
-				
+		
 		long lastTime = System.currentTimeMillis();
 		long dt;
 		
@@ -46,6 +52,7 @@ public class Main {
 			
 			poll();
 			update(dt);
+			car.calcRays(track);
 			render();
 		
 			Display.update();

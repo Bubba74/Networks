@@ -27,8 +27,22 @@ public class CarToDraw extends Car {
 			glVertex2d(5,5);
 			glVertex2d(-5,5);
 		glEnd();
-		
+
 		glPopMatrix();
+
+
+		glColor3f(0,1,0);
+		
+		double[] angles = getRayAngles();
+		double[] distances = getRayDistances();
+
+		glBegin(GL_LINES);
+		for (int i=0; i<angles.length; i++){
+			glVertex2d(getX(), getY());
+			glVertex2d(getX()+Math.cos(getZ()+angles[i])*distances[i],
+				   getY()+Math.sin(getZ()+angles[i])*distances[i]);
+		}
+		glEnd();
 		
 	}//render
 
