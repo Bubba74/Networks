@@ -1,57 +1,105 @@
 
 import static org.lwjgl.opengl.GL11.*;
-import static org.lwjgl.glfw.GLFW.*;
 
-import org.lwjgl.opengl.GL;
-import org.lwjgl.opengl.GL11;
+import java.awt.Color;
+
+import org.lwjgl.LWJGLException;
+import org.lwjgl.input.Keyboard;
+import org.lwjgl.opengl.Display;
+import org.lwjgl.opengl.DisplayMode;
 
 public class Main {
+	
+	private static final int WIDTH = 800;
+	private static final int HEIGHT = 500;
 
+	static CarToDraw car;
+	static PathToDraw path;
+	static TrackToDraw track;
+	
 	public static void main(String[] args) {
-t
-		glfwInit();
-		glfwWindowHint(GLFW_DECORATED, GLFW_TRUE);
-		glfwWindowHint(GLFW_REFRESH_RATE, 10);
-		
-		long window = glfwCreateWindow(800, 600, "Test Window", 0, 0);
-	
-		if (window == 0){
-			throw new RuntimeException("Failed to create window");
-		}
-		
-		glfwMakeContextCurrent(window);
-		
-		
-		GL.createCapabilities();
-		glClearColor(0, 0, 1, 1);
-		
-		while (!glfwWindowShouldClose(window)){
+		initGL();
 
-			GL11.glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+		car = new CarToDraw("Test",50,50,1,0.1,0.05);
+		path = new PathToDraw(100);
+
+		path.addPoint(200, 100);
+
+		path.addLine(0, 200);
+		path.addArc(Math.PI/16, 16, 20);
+		
+		path.addLine(Math.PI, 200);
+		path.addArc(Math.PI/16, 16, 20);
+		
+		car.resetTo(path.getX(0), path.getY(0), 0);
+		
+		track = new TrackToDraw(path, 120, Color.red);
+				
+		long lastTime = System.currentTimeMillis();
+		long dt;
+		
+		while (!Display.isCloseRequested()){
+			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 			
-			GL11.glColor3d(1.0, 0.0, 0.0);
-			GL11.glBegin(GL_LINE);
-			GL11.glVertex2d(0, 0);
-			GL11.glVertex2d(100, 0);
-			GL11.glVertex2d(100, 100);
-			GL11.glVertex2d(0, 100);
-			GL11.glVertex2d(50, 50);
-			GL11.glEnd();
+			dt = System.currentTimeMillis()-lastTime;
+			lastTime = System.currentTimeMillis();
 			
-			glfwPollEvents();
-			glfwSwapBuffers(window);
+			poll();
+			update(dt);
+			render();
+		
+			Display.update();
+			Display.sync(15);
 		}
 		
-		
-		glfwDestroyWindow(window);
+		Display.destroy();
 	
+	}//main
+	
+	public static void poll (){
+	
+		car.inputs(Keyboard.isKeyDown(Keyboard.KEY_LEFT), Keyboard.isKeyDown(Keyboard.KEY_RIGHT));
+		
+	}//poll
+	
+	public static void update (long dt){
+		
+		car.update(dt);
+		
+		
+	}//update
+	
+	public static void render (){
+		glPushMatrix();
+		glTranslated(-car.getX()+WIDTH/2, -car.getY()+HEIGHT/2, 0);
+		car.render();
+		track.render();
+		
+		glColor3f(1,1,1);
+		path.render();
+		glPopMatrix();
 	}
 	
-	public static void initWindow (int width, int height){
+	public static void initGL (){
+
+		Display.setTitle("RaceCars");
+		Display.setLocation(800, 500);
+
+		try {
+			Display.setDisplayMode(new DisplayMode(WIDTH,HEIGHT));
+			Display.create();
+		} catch (LWJGLException e) {
+			e.printStackTrace();
+		}
 		
-		
-		
-	}
+		glMatrixMode(GL_PROJECTION);
+		glLoadIdentity();
+		glOrtho(0,WIDTH,HEIGHT,0,1,-1);
+		glMatrixMode(GL_MODELVIEW);
+
+		glClearColor(0, 0, 1, 1);
+
+	}//initGL
 	
 
 }//Main

@@ -18,15 +18,17 @@ public class Path {
 		// point.
 		Path path = new Path(poly_num+1);
 
-		double dAngle = 2*Math.pi/poly_num;
+		double dAngle = 2*Math.PI/poly_num;
 		for (int i=0; i<=poly_num; i++){
 			int dx = (int)(Math.cos(dAngle*i)*radius);
 			int dy = (int)(Math.sin(dAngle*i)*radius);
 			path.setPoint (i, center_x+dx, center_y+dy);
 		}
+		
+		return path;
 	}//getCircle
 
-	public void addArc (Path p, double delta_angle, int line_num, int line_size){
+	public void addArc (double delta_angle, int line_num, int line_size){
 		//Adds on an arc to an existing Path
 		/*
 			Path p -- The Path object to add an arc to
@@ -35,33 +37,41 @@ public class Path {
 			int line_size -- Length of each line
 		*/
 
-		int start_x = p.lastX();
-		int start_y = p.lastY();
+		int start_x = lastX();
+		int start_y = lastY();
 		double start_angle = 0;
 
-		if (p.getFilled() > 1){
-			start_angle = Math.atan2(start_y-p.getY(p.getFilled()-2), start_x-p.getX(p.getFilled()-2));
+		if (getFilled() > 1){
+			start_angle = Math.atan2(start_y-getY(getFilled()-2), start_x-getX(getFilled()-2));
 		}
 
+		System.out.println(filled);
 		for (int i=0; i<=line_num; i++){
 			int dx = (int)(line_size*Math.cos(start_angle+i*delta_angle));
 			int dy = (int)(line_size*Math.sin(start_angle+i*delta_angle));
-			p.addPoint(last_x+=dx, last_y+=dy);
+			
+			addPoint(start_x+=dx, start_y+=dy);
 		}
+		System.out.println(filled);
+		
+		for (int i=0; i<filled; i++){
+			System.out.printf("X: %d, Y: %d\n",getX(i),getY(i));
+		}
+		System.out.println("\n\n\n\n\n\n");
 
 	}//addArc
 	
-	public void addLine (Path p, double angle, int line_size){
-		int start_x = p.lastX();
-		int start_y = p.lastY();
+	public void addLine (double angle, int line_size){
+		int start_x = lastX();
+		int start_y = lastY();
 
-		p.setPoint(start_index, start_x+line_size*Math.cos(angle)
-					, start_y+line_size*Math.sin(angle));
+		addPoint((int)(start_x+line_size*Math.cos(angle))
+					, (int)(start_y+line_size*Math.sin(angle)));
 	}//addLine
 
 	//-----------Basic Methods------------//
 
-	public Track (int number_of_tracks){
+	public Path (int number_of_tracks){
 		this.size = number_of_tracks;
 		this.filled = 0;
 
@@ -70,7 +80,8 @@ public class Path {
 	}//Track
 
 	public void addPoint (int x, int y){
-		setPoint(filled, x, y);
+		arr_x[filled] = x;
+		arr_y[filled] = y;
 		filled++;
 	}//addPoint
 
