@@ -1,13 +1,10 @@
 import org.lwjgl.input.Keyboard;
 
-
-
 public class Track {
 
 	private Path center;
 	private Path left, right;
 	private int start_x, start_y;
-	
 
 	public double calcRay (double x, double y, double angle){
 
@@ -82,7 +79,7 @@ public class Track {
 		}//loop over vertices
 		return minimum;
 	}//calcRay
-					
+
 				
 	public Track (Path center_path, int radius){
 		

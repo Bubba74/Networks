@@ -14,11 +14,11 @@ public class Main {
 	private static final int HEIGHT = 500;
 
 	static int x = 50, y = 50;
-	static double z = 0, vel = 0.2, da = 0.02, rayScope = Math.PI/2;
-	static int rays = 2000;
+	static double z = 0, vel = 0.2, da = 0.02, rayScope = Math.PI/6;
+	static int rays = 7;
 
 	static int maxDistance = 500;
-	static Network ai;
+	static NetworkToDraw ai;
 	static double[] outputs = new double[3];//left - center- right
 	static boolean left;
 	static boolean right;
@@ -31,31 +31,31 @@ public class Main {
 	public static void main(String[] args) {
 		initGL();
 		
-		ai = new Network (rays, 20, 10, 3);
+		ai = new NetworkToDraw (rays, 2, 5, 3, 10, HEIGHT-110, 200, 100);
 
 		car = new CarToDraw("Test",x, y, z, vel, da, rayScope, rays);
 		path = new PathToDraw(100);
 
 		path.addPoint(0, 0);
 
-		path.addLine(0, 2000);
-		path.addArc(Math.PI/16,16, 60);
-		path.addLine(Math.PI, 2000);
-		path.addArc(Math.PI/16,16, 60);
+//		path.addLine(0, 2000);
+//		path.addArc(Math.PI/16,16, 60);
+//		path.addLine(Math.PI, 2000);
+//		path.addArc(Math.PI/16,16, 60);
 
 //		path.addLine(Math.PI/2, 200);
 //		path.addLine(Math.PI, 200);
 //		path.addLine(3*Math.PI/2, 200);
 
-//		path.addLine(0, 200);
-//		path.addArc(Math.PI/16, 16, 20);
-//		
-//		path.addLine(Math.PI, 200);
-//		path.addArc(Math.PI/16, 16, 20);
-//		
-		car.resetTo(path.getX(0), path.getY(0), 0);
+		path.addLine(0, 200);
+		path.addArc(Math.PI/16, 16, 20);
+		
+		path.addLine(Math.PI, 200);
+		path.addArc(Math.PI/16, 16, 20);
 		
 		track = new TrackToDraw(path, 60, Color.red);
+		
+		car.resetTo(track.getStartX(), track.getStartY(), 0);
 		
 		long lastTime = System.currentTimeMillis();
 		long dt;
@@ -68,7 +68,6 @@ public class Main {
 			
 			poll();
 			update(dt);
-			car.calcRays(track);
 			render();
 		
 			iteration++;
@@ -112,7 +111,6 @@ public class Main {
 		double[] inputs = new double[rays];
 		for (int i=0; i<rays; i++){
 			inputs[i] = car.getRayDistances()[i]/Main.maxDistance;
-			if (inputs[i] > 1) inputs[i] = 1;
 		}
 //		double[] inputs = new double[1];
 //		inputs[0] = car.getRayDistances()[1]-car.getRayDistances()[0];
@@ -121,6 +119,11 @@ public class Main {
 		if (iteration % 100 == 0) System.out.println("Iteration # "+iteration);
 		
 		car.update(dt);
+		car.calcRays(track);
+
+		if (car.didCollide(5))
+			car.resetTo(track.getStartX(), track.getStartY(), 0);
+		
 		
 	}//update
 	
@@ -128,10 +131,10 @@ public class Main {
 		glPushMatrix();
 		glTranslated(-car.getX()+WIDTH/2, -car.getY()+HEIGHT/2, 0);
 		car.render();
-//		track.render();
+		track.render();
 		
 		glColor3f(1,1,1);
-//		path.render();
+		path.render();
 		glPopMatrix();
 		
 		//Render Network Outputs
@@ -156,6 +159,8 @@ public class Main {
 				glVertex2i(x_vals[i][2], y_vals[i][2]);
 			glEnd();
 		}
+		
+		ai.render();
 		
 	}//render
 	

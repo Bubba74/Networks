@@ -1,6 +1,6 @@
 
 echo "Compiling ../"
 
-javac -d . ../*.java
+javac -d . ../TestNetwork.java ../Layer.java ../Weights.java ../Network.java
 
 echo "Done"

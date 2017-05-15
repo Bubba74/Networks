@@ -43,15 +43,26 @@ public class Car {
 	}//update
 	
 	public void calcRays (Track track){
-
 		//Run each ray through the track calcRay() method
-		
+
 		for (int i=0; i<rayAngles.length; i++){
 			double angle = z + rayAngles[i];
 			rayDistances[i] = track.calcRay(x,y,angle);
 		}
-		
 	}//calcRays
+	
+	public boolean didCollide (int tolerance){
+		boolean collision = false;
+		
+		for (double d: rayDistances){
+			if (d < tolerance){
+				collision = true;
+				break;
+			}
+		}
+		
+		return collision;
+	}//didCollide
 
 	public void inputs (boolean left, boolean right){
 		int command = 0;//0 = straight

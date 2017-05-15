@@ -125,6 +125,7 @@ public class Network {
 
 //------------------Basic Functions----------------------------//
 
+
 	public String toString (){
 		String str = "";
 

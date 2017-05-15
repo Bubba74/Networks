@@ -1,24 +1,8 @@
 
-Feedforward IS working (!)
-
-Must implement an iterative backpropagation algorithm.
-	- Starts with outputs and calculates delta there.
-	- Moves back to weights connecting to outputs, calculates delta for each line
-	- Moves back to each previous layer, calculating deltas to assist the weights before it.
-
-
 Both for testing and for visual effect (number tables are lame!)
 	- Implement a jcomponent that displays the state of a neural network
 		- Inputs, weights (graphically), hidden layers, outputs, error
 	- Possibly then shift over to LWJGL, for speed -- but less portability :(
 
 USE IT!!!
-	- AND, OR, and XOR gates
-		- Testing, mostly
 	- Fun stuff
-
-
-
-Current State:
-	- Error calculation for last layer should work
-	- Still need to work in an iterative solution that works for however many layers
