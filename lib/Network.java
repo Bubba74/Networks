@@ -77,8 +77,10 @@ public class Network {
 			System.out.println(output);
 		}
 	}//train
-
-
+	
+	public double[] getOutputs(){
+		return layers[layers.length-1].getOuts();
+	}//getOutputs
 
 //------------------Construction of Network object-----------------------//
 

@@ -7,12 +7,31 @@ public class CarToDraw extends Car {
 		Maintains management of Car class, but adds a render method
 		which uses opengl graphics through lwjgl.
 	*/
-	public CarToDraw (String name, double x, double y, double z, double vel, double turningSpeed){
-		super (name, x, y, z, vel, turningSpeed);
+	public CarToDraw (String name, double x, double y, double z
+		, double vel, double turningSpeed
+		, double greatestRayAngle, int rayCount){
+
+		super (name, x, y, z, vel, turningSpeed, greatestRayAngle, rayCount);
 	}
 
 	public void render (){
 		
+		
+		int maxDistance = Main.maxDistance;
+//		glColor3f(0,1,0);
+		
+		double[] angles = getRayAngles();
+		double[] distances = getRayDistances();
+		
+		glBegin(GL_LINES);
+		for (int i=0; i<angles.length; i++){
+			glColor3d(0, 1-distances[i]/maxDistance, 0);
+			glVertex2d(getX(), getY());
+			glVertex2d(getX()+Math.cos(getZ()+angles[i])*distances[i],
+					getY()+Math.sin(getZ()+angles[i])*distances[i]);
+		}
+		glEnd();
+
 		glPushMatrix();
 		
 		glTranslated(getX(), getY(), 0);
@@ -29,20 +48,6 @@ public class CarToDraw extends Car {
 		glEnd();
 
 		glPopMatrix();
-
-
-		glColor3f(0,1,0);
-		
-		double[] angles = getRayAngles();
-		double[] distances = getRayDistances();
-
-		glBegin(GL_LINES);
-		for (int i=0; i<angles.length; i++){
-			glVertex2d(getX(), getY());
-			glVertex2d(getX()+Math.cos(getZ()+angles[i])*distances[i],
-				   getY()+Math.sin(getZ()+angles[i])*distances[i]);
-		}
-		glEnd();
 		
 	}//render
 

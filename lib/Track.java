@@ -1,3 +1,5 @@
+import org.lwjgl.input.Keyboard;
+
 
 
 public class Track {
@@ -7,33 +9,42 @@ public class Track {
 	private int start_x, start_y;
 	
 
-	public double calcRay (double x, double y, double angle, int start_index){
+	public double calcRay (double x, double y, double angle){
 
-		double minimum = 500; //Greater than 0
+		double minimum = Main.maxDistance; //Greater than 0
 
+		boolean verticalRay = false;
+		
+		double dx = 0, dy = 0, m = 0, b = 0;
+		
+		dx = Math.cos(angle);
+		dy = Math.sin(angle);
+		
+		if (dx == 0){
+			verticalRay = true;
+		} else {
+			m = dy/dx;
+			b = y-m*x;
+		}
 
-		double dx = Math.cos(angle);
-		double dy = Math.sin(angle);
-
-		double m = dy/dx;
-		double b = y-m*x;
-
-//		for (int i=start_index; i<center.getFilled()-1; i++){
-		for (int i=0; i<center.getFilled()-1; i++){
-			int j = i;
-			if (j < 0) j += center.getFilled();
-			
-			int x1, y1, x2, y2;
+		Path[] paths = {left, right};
+		for (Path p: paths){
 
 			//Left Path
-			Path[] paths = {left, right};
+			for (int i=0; i<center.getFilled(); i++){
+				double x1, y1, x2, y2;
 			
-			for (Path p: paths){
 				
-				x1 = p.getX(j); y1 = p.getY(j);
-				x2 = p.getX(j+1); y2 = p.getY(j+1);
+				x1 = p.getX(i);
+				y1 = p.getY(i);
+				x2 = p.getX((i+1<center.getFilled()?i+1:0));
+				y2 = p.getY((i+1<center.getFilled()?i+1:0));
 	
 				if (x2-x1 == 0){
+					if (verticalRay){
+						//Ignore vertical ray contacting vertical line segments
+						continue;
+					}
 					//Check intersection of ray with vertical line segment
 					double a = x2*m+b; //Vertical intersection
 	
@@ -43,11 +54,24 @@ public class Track {
 				} else {
 					double m1 = (y2-y1)/(x2-x1);
 					double b1 = y1-m1*x1;
+					
+					if (verticalRay){
+						if (Math.min(x1, x2) <= x && x <= Math.max(x1, x2)){
+							//Contact
+							double distance = x*m1+b1-y;
+							if (0 <= distance && distance < minimum)
+								minimum = distance;
+						}
+						continue;
+					}
 	
 					//Ray = m*x + b;
 					//Line Segment = m1*x + b1;
-	
 					double xintercept = (b1-b)/(m-m1);
+
+//					double intercept = (y1-(y2-y1)/(x2-x1)*x1-b)/(m-(y2-y1)/(x2-x1));
+//					if (intercept != xintercept) System.out.println("AHFDAHRAHGAR");
+					
 					if (Math.min(x1,x2) <= xintercept && xintercept <= Math.max(x1,x2)){
 						double distance = (xintercept-x)/dx;
 						if ( 0 <= distance && distance < minimum) minimum = distance;

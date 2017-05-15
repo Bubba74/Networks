@@ -15,10 +15,11 @@ public class Car {
 	private double turnVel;
 	
 	//Angles (relative to z) from which the car will read distance measurements
-	private static double[] rayAngles = {
+//	private double[] rayAngles = {
 //			-Math.PI/2, -Math.PI/3, -Math.PI/6, 0, Math.PI/6, Math.PI/3, Math.PI/2
-		-6*Math.PI/12, -5*Math.PI/12, -4*Math.PI/12, -3*Math.PI/12, -2*Math.PI/12, -1*Math.PI/12, 0*Math.PI/12, 1*Math.PI/12, 2*Math.PI/12, 3*Math.PI/12, 4*Math.PI/12, 5*Math.PI/12, 6*Math.PI/12, 
-		};
+//		-6*Math.PI/12, -5*Math.PI/12, -4*Math.PI/12, -3*Math.PI/12, -2*Math.PI/12, -1*Math.PI/12, 0*Math.PI/12, 1*Math.PI/12, 2*Math.PI/12, 3*Math.PI/12, 4*Math.PI/12, 5*Math.PI/12, 6*Math.PI/12, 
+//		};
+	private double[] rayAngles;
 	private double[] rayDistances;
 	
 	public void update (long dt){
@@ -42,24 +43,12 @@ public class Car {
 	}//update
 	
 	public void calcRays (Track track){
-		
-		//Index of closest center point
-		int index = 0;
-		//Squared Distance to that point
-		double center_d2 = Integer.MAX_VALUE;
-		
-		Path center_path = track.getCenterPath();
-		for (;index < center_path.getFilled(); index++){
-			double d2 = (x - center_path.getX(index))*(x-center_path.getX(index)) + (y-center_path.getY(index))*(y-center_path.getY(index));
-			if (d2 < center_d2) center_d2 = d2;
-			else
-				break;
-		}
-		index -= 3;
+
+		//Run each ray through the track calcRay() method
 		
 		for (int i=0; i<rayAngles.length; i++){
 			double angle = z + rayAngles[i];
-			rayDistances[i] = track.calcRay(x,y,angle, index);
+			rayDistances[i] = track.calcRay(x,y,angle);
 		}
 		
 	}//calcRays
@@ -84,7 +73,7 @@ public class Car {
 
 	//-----------Basic Methods------------//
 	
-	public Car (String name, double x, double y, double z, double vel, double turningSpeed){
+	public Car (String name, double x, double y, double z, double vel, double turningSpeed, double greatestRayAngle, int rayCount){
 		this.name = name;
 		this.control = Control.kStraight;
 
@@ -95,7 +84,11 @@ public class Car {
 		this.vel = vel;
 		this.turnVel = turningSpeed;
 		
-		this.rayDistances = new double[rayAngles.length];
+		this.rayAngles = new double[rayCount];
+		for (int i=0; i<rayCount; i++)
+			rayAngles[i] = -greatestRayAngle+i*(2*greatestRayAngle/(rayCount-1));
+		
+		this.rayDistances = new double[rayCount];
 	}
 
 	public String getName (){
@@ -112,6 +105,16 @@ public class Car {
 	}
 	public double getVel (){
 		return vel;
+	}
+	
+	public void forward(){
+		vel += 0.001;
+	}
+	public void reverse(){
+		vel -= 0.005;
+	}
+	public void stop(){
+		vel = 0.0;
 	}
 	public double[] getRayAngles (){
 		return rayAngles;

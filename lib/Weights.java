@@ -4,7 +4,7 @@ import java.util.Random;
 public class Weights {
 	
 	private Random rng;
-	private float learningRate = 1f;
+	private float learningRate = 0.2f;
 	Layer inputLayer, outputLayer;
 	int left, right;
 
