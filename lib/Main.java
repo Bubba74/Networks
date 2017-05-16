@@ -14,10 +14,11 @@ public class Main {
 	private static final int HEIGHT = 500;
 
 	static int x = 50, y = 50;
-	static double z = 0, vel = 0.2, da = 0.02, rayScope = Math.PI/6;
+	static double z = 0, vel = 0.06, da = 0.02, rayScope = Math.PI/6;
 	static int rays = 7;
 
-	static MiniPID pid = new MiniPID(0.9,0,0);
+	static MiniPID pid = new MiniPID(1,0,0);
+	static AnalogToPWM aToPwm = new AnalogToPWM(100, -1, 1);
 	static boolean aiControlled = true;
 	static boolean lShiftHeld = false;
 	static int checkpoint = 0;
@@ -104,12 +105,11 @@ public class Main {
 			
 			//Turn a -1 to 1 analog output signal from PID controller
 			//into essentially a pwm signal
-			boolean turning = false;
-			long currentTime = System.currentTimeMillis();
-			if ((currentTime-start_time)%(101-Math.abs(100*output)) < 1) turning = true;
-			
-			if (output < 0) left = turning;
-			else if (output > 0) right = turning;
+			double pwm = aToPwm.getPWM(output);
+			pwm = output;
+
+			if (pwm < 0.2) left = true;
+			if (pwm > 0.2) right = true;
 			
 		} else {
 			left = Keyboard.isKeyDown(Keyboard.KEY_LEFT);
@@ -130,8 +130,10 @@ public class Main {
 		car.update(dt);
 		car.calcRays(track);
 
-		if (car.didCollide(5))
+		if (car.didCollide(5)){
 			car.resetTo(track.getStartX(), track.getStartY(), 0);
+			checkpoint = 0;
+		}
 		
 		double targetAngle = car.getZ();
 		
@@ -141,7 +143,8 @@ public class Main {
 		double dy = py - car.getY();
 		
 		targetAngle = Math.atan2(dy, dx);
-		if (dy*dy + dx*dx < 25) checkpoint++;
+		if (dy*dy + dx*dx < 250) checkpoint++;
+		if (checkpoint == path.getFilled()) checkpoint = 0;
 		
 		output = pid.getOutput(car.getZ(), targetAngle);
 		
@@ -169,6 +172,7 @@ public class Main {
 		
 		glPopMatrix();
 
+		//PID Background
 		glColor3f(1,1,1);
 		glBegin(GL_QUADS);
 			glVertex2f(10,10);
@@ -177,7 +181,7 @@ public class Main {
 			glVertex2f(10,110);
 		glEnd();
 		
-		double pidx = 10+200/((output+2)/2);
+		double pidx = 10+200/(1+(output+1)/2);
 		glColor3f(1,0,0);
 		glBegin(GL_LINES);
 			glVertex2d(pidx, 10);
