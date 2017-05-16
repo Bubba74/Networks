@@ -1,3 +1,6 @@
+package main;
+
+import tracks.Track;
 
 public class Car {
 
@@ -54,12 +57,22 @@ public class Car {
 	public boolean didCollide (int tolerance){
 		boolean collision = false;
 		
-		for (double d: rayDistances){
-			if (d < tolerance){
-				collision = true;
-				break;
+//		for (double d: rayDistances){
+		int count = 0;
+		for (int i=0; i<rayDistances.length; i++){
+			if (rayDistances[i] < tolerance){
+				count++;
+//				double dx = Math.cos(z+rayAngles[i]);
+//				if (-0.001 > dx || dx > 0.001){
+//					collision = true;
+//				}
+//				else
+//					System.out.printf("Collided with ray: %d, (%.1f, %.1f, %.2f) Vertical? %b\n", i, x, y, z+rayAngles[i], -0.01 < dx && dx < 0.01);
+//				break;
 			}
 		}
+		
+		if (count > 10) collision = true;
 		
 		return collision;
 	}//didCollide

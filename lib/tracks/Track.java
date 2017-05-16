@@ -1,4 +1,6 @@
-import org.lwjgl.input.Keyboard;
+package tracks;
+
+import main.Main;
 
 public class Track {
 
@@ -16,7 +18,8 @@ public class Track {
 		
 		dx = Math.cos(angle);
 		dy = Math.sin(angle);
-		
+
+		//Honestly not sure how often this will trip, but oh well.
 		if (dx == 0){
 			verticalRay = true;
 		} else {

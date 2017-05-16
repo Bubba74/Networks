@@ -1,8 +1,0 @@
-
-Both for testing and for visual effect (number tables are lame!)
-	- Implement a jcomponent that displays the state of a neural network
-		- Inputs, weights (graphically), hidden layers, outputs, error
-	- Possibly then shift over to LWJGL, for speed -- but less portability :(
-
-USE IT!!!
-	- Fun stuff

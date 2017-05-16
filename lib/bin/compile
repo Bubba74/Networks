@@ -1,6 +1,0 @@
-
-echo "Compiling ../"
-
-javac -d . ../TestNetwork.java ../Layer.java ../Weights.java ../Network.java
-
-echo "Done"

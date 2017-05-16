@@ -1,5 +1,8 @@
+package drawing;
 
 import static org.lwjgl.opengl.GL11.*;
+
+import tracks.Path;
 
 public class PathToDraw extends Path {
 

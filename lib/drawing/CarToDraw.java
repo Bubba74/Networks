@@ -1,5 +1,9 @@
+package drawing;
 
 import static org.lwjgl.opengl.GL11.*;
+
+import main.Car;
+import main.Main;
 
 public class CarToDraw extends Car {
 	

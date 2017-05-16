@@ -1,4 +1,6 @@
 
+import networks.Network;
+
 public class TestNetwork {
 
 	public static void main (String[] args){

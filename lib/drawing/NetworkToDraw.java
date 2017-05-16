@@ -1,5 +1,10 @@
-import org.lwjgl.opengl.Display;
+package drawing;
+
 import static org.lwjgl.opengl.GL11.*;
+
+import networks.Network;
+
+import org.lwjgl.opengl.Display;
 
 public class NetworkToDraw extends Network {
 

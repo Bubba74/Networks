@@ -1,3 +1,4 @@
+package networks;
 
 import java.util.Random;
 
