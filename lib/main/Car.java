@@ -8,20 +8,20 @@ public class Car {
 		kLeft, kStraight, kRight
 	}
 	
-	private String name;
 	private Control control;
-	
+
+	//(x,y) pair representing car's location
 	private double x,y;
-	private double z; //View angle in radians
+	//Angle towards which the car is 'looking' (0 == East)
+	private double z; //radians
 	
+	//Forward Velocity
 	private double vel;
+	//delta angle for each loop
 	private double turnVel;
 	
 	//Angles (relative to z) from which the car will read distance measurements
-//	private double[] rayAngles = {
-//			-Math.PI/2, -Math.PI/3, -Math.PI/6, 0, Math.PI/6, Math.PI/3, Math.PI/2
-//		-6*Math.PI/12, -5*Math.PI/12, -4*Math.PI/12, -3*Math.PI/12, -2*Math.PI/12, -1*Math.PI/12, 0*Math.PI/12, 1*Math.PI/12, 2*Math.PI/12, 3*Math.PI/12, 4*Math.PI/12, 5*Math.PI/12, 6*Math.PI/12, 
-//		};
+	private int rayCount;
 	private double[] rayAngles;
 	private double[] rayDistances;
 	
@@ -48,7 +48,7 @@ public class Car {
 	public void calcRays (Track track){
 		//Run each ray through the track calcRay() method
 
-		for (int i=0; i<rayAngles.length; i++){
+		for (int i=0; i<rayCount; i++){
 			double angle = z + rayAngles[i];
 			rayDistances[i] = track.calcRay(x,y,angle);
 		}
@@ -57,18 +57,10 @@ public class Car {
 	public boolean didCollide (int tolerance){
 		boolean collision = false;
 		
-//		for (double d: rayDistances){
 		int count = 0;
-		for (int i=0; i<rayDistances.length; i++){
-			if (rayDistances[i] < tolerance){
+		for (double d: rayDistances){
+			if (d < tolerance){
 				count++;
-//				double dx = Math.cos(z+rayAngles[i]);
-//				if (-0.001 > dx || dx > 0.001){
-//					collision = true;
-//				}
-//				else
-//					System.out.printf("Collided with ray: %d, (%.1f, %.1f, %.2f) Vertical? %b\n", i, x, y, z+rayAngles[i], -0.01 < dx && dx < 0.01);
-//				break;
 			}
 		}
 		
@@ -97,8 +89,7 @@ public class Car {
 
 	//-----------Basic Methods------------//
 	
-	public Car (String name, double x, double y, double z, double vel, double turningSpeed, double greatestRayAngle, int rayCount){
-		this.name = name;
+	public Car (double x, double y, double z, double vel, double turningSpeed, double greatestRayAngle, int rayNum){
 		this.control = Control.kStraight;
 
 		this.x = x;
@@ -108,16 +99,27 @@ public class Car {
 		this.vel = vel;
 		this.turnVel = turningSpeed;
 		
-		this.rayAngles = new double[rayCount];
-		for (int i=0; i<rayCount; i++)
-			rayAngles[i] = -greatestRayAngle+i*(2*greatestRayAngle/(rayCount-1));
+		rayCount = rayNum;
+		rayAngles = new double[rayCount];
+		fillAngles(greatestRayAngle);
 		
 		this.rayDistances = new double[rayCount];
-	}
+	}//Complex Constructor
+	public Car (){
+		this.control = Control.kStraight;
+		
+		x = 0;
+		y = 0;
+		z = 0;
+		
+		vel = 0;
+		turnVel = 0;
+		
+		rayCount = 0;
+		rayAngles = null;
+		rayDistances = null;
+	}//Car
 
-	public String getName (){
-		return name;
-	}
 	public double getX (){
 		return x;
 	}
@@ -131,14 +133,19 @@ public class Car {
 		return vel;
 	}
 	
-	public void forward(){
-		vel += 0.001;
-	}
-	public void reverse(){
-		vel -= 0.005;
-	}
+	public void setVelocities (double forward, double turn){
+		vel = forward;
+		turnVel = turn;
+	}//setVelocities
+	public void accelerate(double acc){
+		vel += acc;
+	}//acclerate
 	public void stop(){
 		vel = 0.0;
+	}//stop
+
+	public int getRayNum(){
+		return rayCount;
 	}
 	public double[] getRayAngles (){
 		return rayAngles;
@@ -146,10 +153,28 @@ public class Car {
 	public double[] getRayDistances (){
 		return rayDistances;
 	}
-
+	public void resetRays (double greatestAngle, int count){
+		rayCount = count;
+		rayAngles = new double[count];
+		fillAngles(greatestAngle);
+	}//resetRays
+	
+	private void fillAngles (double greatestAngle){
+		for (int i=0; i<rayCount; i++)
+			rayAngles[i] = -greatestAngle+i*(2*greatestAngle/(rayCount-1));
+	}//fillAngles
+	
 	public void resetTo (double x, double y, double z){
 		this.x = x;
 		this.y = y;
 		this.z = z;
-	}
+	}//resetTo
+	public void resetTo (double kX, double kY, double kZ, double kVel, double kTurnVel){
+		x = kX;
+		y = kY;
+		z = kZ;
+		
+		vel = kVel;
+		turnVel = kTurnVel;
+	}//resetTo
 }//Car

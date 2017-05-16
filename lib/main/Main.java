@@ -43,7 +43,7 @@ public class Main {
 		pid.setOutputLimits(1);
 		pid.setSetpoint(0);
 		
-		car = new CarToDraw("Test",x, y, z, vel, da, rayScope, rays);
+		car = new CarToDraw(x, y, z, vel, da, rayScope, rays);
 		path = new PathToDraw(100);
 
 		path.addPoint(0, 0);
@@ -101,8 +101,8 @@ public class Main {
 			lShiftHeld = false;
 		}
 
-		if (Keyboard.isKeyDown(Keyboard.KEY_UP)) car.forward();
-		if (Keyboard.isKeyDown(Keyboard.KEY_DOWN)) car.reverse();
+		if (Keyboard.isKeyDown(Keyboard.KEY_UP)) car.accelerate(0.01);
+		if (Keyboard.isKeyDown(Keyboard.KEY_DOWN)) car.accelerate(0.01);
 		if (Keyboard.isKeyDown(Keyboard.KEY_SPACE)) car.stop();
 		if (Keyboard.isKeyDown(Keyboard.KEY_R)) car.resetTo(path.getX(0), path.getY(0), 0);
 		
