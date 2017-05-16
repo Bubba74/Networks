@@ -18,7 +18,7 @@ public class Main {
 	static int rays = 7;
 
 	static MiniPID pid = new MiniPID(1,0,0);
-	static AnalogToPWM aToPwm = new AnalogToPWM(100, -1, 1);
+	static AnalogToPWM aToPwm = new AnalogToPWM(100);
 	static boolean aiControlled = true;
 	static boolean lShiftHeld = false;
 	static int checkpoint = 0;
@@ -105,7 +105,7 @@ public class Main {
 			
 			//Turn a -1 to 1 analog output signal from PID controller
 			//into essentially a pwm signal
-			double pwm = aToPwm.getPWM(output);
+			double pwm = aToPwm.getPWM(Math.abs(output));
 			pwm = output;
 
 			if (pwm < 0.2) left = true;
