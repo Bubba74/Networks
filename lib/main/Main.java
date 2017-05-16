@@ -20,53 +20,56 @@ public class Main {
 	private static final int WIDTH = 800;
 	private static final int HEIGHT = 500;
 
-	static int x = 50, y = 50;
-	static double z = 0, vel = 0.1, da = 0.02, rayScope = Math.PI/2;
-	static int rays = 1600;
+	static double vel = 0.2, da = 0.02, rayScope = Math.PI/2;
+	static int rays = 160;
 
-	static MiniPID pid = new MiniPID(1,0,0);
-	static AnalogToPWM aToPwm = new AnalogToPWM(100);
-	static boolean aiControlled = true;
-	static boolean lShiftHeld = false;
-	
-	static boolean left;
-	static boolean right;
-	static double output = 0;//From PID Controller
-	
-	static CarToDraw car;
+	static Driver[] cars;
 	static PathToDraw path;
 	static TrackToDraw track;
 	
 	public static void main(String[] args) {
 		initGL();
 		
-		pid.setOutputLimits(1);
-		pid.setSetpoint(0);
+		cars = new Driver[10];
+		for (int i=0; i<10; i++){
+			cars[i] = new Driver(1, true, i==0?Keyboard.KEY_LSHIFT:-1);
+			cars[i].resetRays(rayScope, rays);
+			cars[i].setVelocities(vel*(i+1)/10.0, da);
+			cars[i].setColor(1-i/10.0, i/10.0, 0);
+			cars[i].drawRays(false);
+		}
 		
-		car = new CarToDraw(x, y, z, vel, da, rayScope, rays);
 		path = new PathToDraw(100);
 
 		path.addPoint(0, 0);
 
-//		path.addLine(0, 1000);
-//		path.addArc(Math.PI/16,16, 60);
-//		path.addLine(Math.PI, 1000);
-//		path.addArc(Math.PI/16,16, 60);
-
-		path.addLine(0, 200);
-		path.addLine(Math.PI/2, 200);
-		path.addLine(Math.PI, 200);
-		path.addLine(3*Math.PI/2, 200);
-
+		//Small Track Field
 //		path.addLine(0, 200);
 //		path.addArc(Math.PI/16, 16, 20);
-		
 //		path.addLine(Math.PI, 200);
 //		path.addArc(Math.PI/16, 16, 20);
+
+		
+		//Big Track Field
+		path.addLine(0, 1000);
+		path.addArc(Math.PI/16,16, 60);
+		path.addLine(Math.PI, 1000);
+		path.addArc(Math.PI/16,16, 60);
+//		path.rotate(Math.PI);
+
+		//Square
+//		path.addLine(0, 200);
+//		path.addLine(Math.PI/2, 200);
+//		path.addLine(Math.PI, 200);
+//		path.addLine(3*Math.PI/2, 200);
+
 		
 		track = new TrackToDraw(path, 60, Color.red);
+		System.out.printf("Track -- (%d, %d, %d, %d)\n",track.getX(), track.getY(), track.getWidth(), track.getHeight());
 		
-		car.resetTo(track.getStartX(), track.getStartY(), 0);
+		for (Driver car: cars){
+			car.resetTo(track.getStartX(), track.getStartY(), track.getStartA());
+		}
 		
 		long lastTime = System.currentTimeMillis();
 		long dt;
@@ -92,96 +95,63 @@ public class Main {
 	
 	public static void poll (){
 	
-		if (Keyboard.isKeyDown(Keyboard.KEY_LSHIFT)) {
-			if (!lShiftHeld){
-				lShiftHeld = true;
-				aiControlled = !aiControlled;
-			}
-		} else {
-			lShiftHeld = false;
-		}
-
-		if (Keyboard.isKeyDown(Keyboard.KEY_UP)) car.accelerate(0.01);
-		if (Keyboard.isKeyDown(Keyboard.KEY_DOWN)) car.accelerate(0.01);
-		if (Keyboard.isKeyDown(Keyboard.KEY_SPACE)) car.stop();
-		if (Keyboard.isKeyDown(Keyboard.KEY_R)) car.resetTo(path.getX(0), path.getY(0), 0);
-		
-		if (aiControlled){
-			left = false;
-			right = false;
-			
-			//Turn a -1 to 1 analog output signal from PID controller
-			//into essentially a pwm signal
-			double pwm = aToPwm.getPWM(Math.abs(output));
-			if (output < 0) pwm *= -1;
-
-			if (pwm < 0.2) left = true;
-			if (pwm > 0.2) right = true;
-			
-		} else {
-			left = Keyboard.isKeyDown(Keyboard.KEY_LEFT);
-			right = Keyboard.isKeyDown(Keyboard.KEY_RIGHT);
+		for (Driver car: cars){
+			car.poll();
 		}
 		
-		car.inputs(left, right);
+		for (Driver car: cars){
+			if (Keyboard.isKeyDown(Keyboard.KEY_UP)) car.accelerate(0.001);
+			if (Keyboard.isKeyDown(Keyboard.KEY_DOWN)) car.accelerate(-0.001);
+			if (Keyboard.isKeyDown(Keyboard.KEY_SPACE)) car.stop();
+			if (Keyboard.isKeyDown(Keyboard.KEY_R)) car.resetTo(path.getX(0), path.getY(0), 0);
+		}
 		
 	}//poll
 	
 	public static void update (long dt){
 		
-		double[] inputs = new double[rays];
-		for (int i=0; i<rays; i++){
-			inputs[i] = car.getRayDistances()[i]/Main.maxDistance;
+		for (Driver car: cars){
+			car.update(track, (int)dt);
+	
+			if (car.crashed()){
+				car.resetTo(track.getStartX(), track.getStartY(), track.getStartA());
+			}
 		}
-
-		car.update(dt);
-		car.calcRays(track);
-
-		if (car.didCollide(5)){
-			car.resetTo(track.getStartX(), track.getStartY(), 0);
-		}
-		
-		//PID loop input
-		double offset = 0;
-		double[] dists = car.getRayDistances();
-		for (int i=0; i<rays/2; i++)
-			offset -= dists[i];
-		for (int i=rays/2; i<rays; i++)
-			offset += dists[i];
-		
-		output = pid.getOutput(-offset/10000, 0);
 		
 	}//update
 	
 	public static void render (){
 		glPushMatrix();
-		glTranslated(-car.getX()+WIDTH/2, -car.getY()+HEIGHT/2, 0);
-		car.render();
+//		glTranslated(-car.getX()+WIDTH/2, -car.getY()+HEIGHT/2, 0);
+
+		double x = track.getX(), y = track.getY(), w = track.getWidth(), h = track.getHeight();
+		if (w < WIDTH && h < HEIGHT){
+			glTranslatef(WIDTH/2, HEIGHT/2, 0);
+			glTranslated(-x, -y, 0);
+			glTranslated(-w/2, -h/2, 0);
+		} else {
+			double scale = Math.min(WIDTH/w, HEIGHT/h);
+			glScaled(scale, scale, 1);
+			glTranslated(-x, -y, 0);
+
+			if (WIDTH/w > HEIGHT/h){
+				glTranslated(w/4, 0, 0);
+			} else {
+				glTranslated(0, h/4, 0);
+			}
+		
+		}
+		
+		for (Driver car: cars){
+			car.render();
+		}
+		
 		track.render();
 		
 		glColor3f(1,1,1);
 		path.render();
 		
 		glPopMatrix();
-
-		//PID Background
-		glColor3f(1,1,1);
-		glBegin(GL_QUADS);
-			glVertex2f(10,10);
-			glVertex2f(210,10);
-			glVertex2f(210,110);
-			glVertex2f(10,110);
-		glEnd();
-		
-		//Draw PID output (-1 to 1) -> (10 --> 210) red quad
-		double pidx = 110+100*output;
-		glColor3f(1,0,0);
-		glBegin(GL_QUADS);
-			glVertex2d(pidx-2, 10);
-			glVertex2d(pidx-2, 110);
-			glVertex2d(pidx+2, 110);
-			glVertex2d(pidx+2, 10);
-		glEnd();
 		
 	}//render
 	

@@ -70,6 +70,18 @@ public class Path {
 					, (int)(start_y+line_size*Math.sin(angle)));
 	}//addLine
 
+	public void rotate (double angle){
+		for (int i=0; i<filled; i++){
+			double x = arr_x[i], y = arr_y[i];
+			double d = Math.sqrt(x*x+y*y);
+			double point_angle = Math.atan2(y,x);
+			point_angle += angle;
+			
+			arr_x[i] = (int)(d*Math.cos(point_angle));
+			arr_y[i] = (int)(d*Math.sin(point_angle));
+		}
+	}//rotate
+	
 	//-----------Basic Methods------------//
 
 	public Path (int number_of_tracks){

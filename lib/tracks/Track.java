@@ -6,7 +6,10 @@ public class Track {
 
 	private Path center;
 	private Path left, right;
+	
 	private int start_x, start_y;
+	double start_a;
+	private int x, y, w, h;
 
 	public double calcRay (double x, double y, double angle){
 
@@ -97,6 +100,7 @@ public class Track {
 		
 		start_x = center.getX(0);
 		start_y = center.getY(0);
+		start_a = Math.atan2(center.getY(1)-center.getY(0), center.getX(1)-center.getX(0));
 		
 		//Center path values
 		int prev_x, prev_y, this_x, this_y, next_x, next_y;
@@ -160,7 +164,35 @@ public class Track {
 		left.setPoint(0, left.lastX(), left.lastY());
 		right.setPoint(0, right.lastX(), right.lastY());
 		
+		calcBounds();
+		
 	}//Track
+	public void calcBounds(){
+		int min_x = Integer.MAX_VALUE;
+		int max_x = Integer.MIN_VALUE;
+		int min_y = Integer.MAX_VALUE;
+		int max_y = Integer.MIN_VALUE;
+		
+		Path[] paths = {left, right};
+		
+		for (Path path: paths)
+			for (int i=0; i<path.getFilled(); i++){
+				int x = path.getX(i);
+				int y = path.getY(i);
+				
+				if (x < min_x) min_x = x;
+				else if (x > max_x) max_x = x;
+
+				if (y < min_y) min_y = y;
+				else if (y > max_y) max_y = y;
+			}
+
+		x = min_x;
+		y = min_y;
+		w = max_x-min_x;
+		h = max_y-min_y;
+		
+	}//calcBounds
 	
 	public Path getCenterPath (){
 		return center;
@@ -178,5 +210,21 @@ public class Track {
 	public int getStartY (){
 		return start_y;
 	}
+	public double getStartA (){
+		return start_a;
+	}
+	
+	public int getX(){
+		return x;
+	}//getX
+	public int getY(){
+		return y;
+	}//getY
+	public int getWidth(){
+		return w;
+	}//getWidth
+	public int getHeight(){
+		return h;
+	}//getHeight
 	
 }//Track

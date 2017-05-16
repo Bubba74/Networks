@@ -11,9 +11,8 @@ public class CarToDraw extends Car {
 		Maintains management of Car class, but adds a render method
 		which uses opengl graphics through lwjgl.
 	*/
-	private boolean drawCar;
-	private boolean drawRays;
-	private float r, g, b;
+	private boolean drawCar, drawRays;
+	private double r, g, b;
 	
 	public CarToDraw (double x, double y, double z
 		, double vel, double turningSpeed
@@ -23,16 +22,19 @@ public class CarToDraw extends Car {
 		
 		drawCar = true;
 		drawRays = true;
+		
+		r = 1; g = 0; b = 0;
 	}//CarToDraw
 	public CarToDraw (){
 		super();
 		
 		drawCar = true;
 		drawRays = true;
+		r = 1; g = 0; b = 0;
 	}//CarToDraw
 	
 	
-	public void setColor(float red, float green, float blue){
+	public void setColor(double red, double green, double blue){
 		r = red;
 		g = green;
 		b = blue;
@@ -77,7 +79,7 @@ public class CarToDraw extends Car {
 			glTranslated(getX(), getY(), 0);
 			glRotated(180*getZ()/Math.PI,0,0,1);
 			
-			glColor3f(r,g,b);
+			glColor3d(r,g,b);
 			
 			glBegin(GL_POLYGON);
 				glVertex2d(-5,-5);

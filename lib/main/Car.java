@@ -25,9 +25,9 @@ public class Car {
 	private double[] rayAngles;
 	private double[] rayDistances;
 	
-	public void update (long dt){
+	public void update (int dt){
 		
-		double d = vel* (int)dt;
+		double d = vel* dt;
 		x += Math.cos(z)*d;
 		y += Math.sin(z)*d;
 		
@@ -155,8 +155,11 @@ public class Car {
 	}
 	public void resetRays (double greatestAngle, int count){
 		rayCount = count;
+		
 		rayAngles = new double[count];
 		fillAngles(greatestAngle);
+		
+		rayDistances = new double[count];
 	}//resetRays
 	
 	private void fillAngles (double greatestAngle){
