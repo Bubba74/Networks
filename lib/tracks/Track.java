@@ -106,7 +106,7 @@ public class Track {
 		int prev_x, prev_y, this_x, this_y, next_x, next_y;
 		
 		//The +- offsets from (this_x, this_y)
-		double dx = 0, dy = 0;
+		int dx = 0, dy = 0;
 		
 		//For some reason, starting at i=0 doesn't work. So instead, we
 		//  start with a filler and set it to the last point at the end.
@@ -152,12 +152,40 @@ public class Track {
 
 			angle = Math.atan2(avg_y, avg_x);
 			
-			dx = Math.cos(angle);
-			dy = Math.sin(angle);
-			
-			left.addPoint(this_x - (int)(dx*radius), this_y - (int)(dy*radius));
-			right.addPoint(this_x + (int)(dx*radius), this_y + (int)(dy*radius));
+			dx = (int)(radius*Math.cos(angle));
+			dy = (int)(radius*Math.sin(angle));
 
+			
+			left.addPoint(this_x - dx, this_y - dy);
+			right.addPoint(this_x + dx, this_y + dy);
+			
+			/*
+			 * Trying not to create crossovers
+				double tx, ty;
+			if (i==1){
+				left.addPoint(this_x - dx, this_y - dy);
+				right.addPoint(this_x + dx, this_y + dy);
+			}else {
+
+				tx = this_x - dx;
+				ty = this_y - dy;
+				double addToLeft = (left.lastX()-tx)*(left.lastX()-tx)+(left.lastY()-ty)*(left.lastY()-ty)
+									+(right.lastX()-tx)*(right.lastX()-tx)+(right.lastX()-tx)*(right.lastX()-tx);
+				tx = this_x + dx;
+				ty = this_y + dy;
+				double addToRight = (left.lastX()-tx)*(left.lastX()-tx)+(left.lastY()-ty)*(left.lastY()-ty)
+						+(right.lastX()-tx)*(right.lastX()-tx)+(right.lastX()-tx)*(right.lastX()-tx);
+	
+				if (addToLeft < addToRight){
+					left.addPoint(this_x - dx, this_y - dy);
+					right.addPoint(this_x + dx, this_y + dy);
+				} else {
+					left.addPoint(this_x + dx, this_y + dy);
+					right.addPoint(this_x - dx, this_y - dy);
+				}
+			}
+			 */
+ 
 //			System.out.printf("Avgx: %f\tAvgy: %f\t\tDx: %f\tDy: %f\n", avg_x, avg_y, dx, dy);
 			
 		}//for loop

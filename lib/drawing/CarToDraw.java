@@ -12,7 +12,7 @@ public class CarToDraw extends Car {
 		which uses opengl graphics through lwjgl.
 	*/
 	private boolean drawCar, drawRays;
-	private double r, g, b;
+	private double[] color;
 	
 	public CarToDraw (double x, double y, double z
 		, double vel, double turningSpeed
@@ -23,22 +23,32 @@ public class CarToDraw extends Car {
 		drawCar = true;
 		drawRays = true;
 		
-		r = 1; g = 0; b = 0;
+		color = new double[3];
+		color[0] = 1;
+		color[1] = 0;
+		color[2] = 0;
 	}//CarToDraw
 	public CarToDraw (){
 		super();
 		
 		drawCar = true;
 		drawRays = true;
-		r = 1; g = 0; b = 0;
+		
+		color = new double[3];
+		color[0] = 1;
+		color[1] = 0;
+		color[2] = 0;
 	}//CarToDraw
 	
 	
 	public void setColor(double red, double green, double blue){
-		r = red;
-		g = green;
-		b = blue;
+		color[0] = red;
+		color[1] = green;
+		color[2] = blue;
 	}//setColor
+	public double[] getColor (){
+		return color;
+	}//getColor
 	
 	public void drawCar (boolean draw){
 		drawCar = draw;
@@ -53,8 +63,7 @@ public class CarToDraw extends Car {
 		return drawRays;
 	}//getDrawRays	
 	
-	public void render (){
-		
+	public void renderRays (){
 		if (drawRays){
 			int maxDistance = Main.maxDistance;
 			
@@ -71,7 +80,10 @@ public class CarToDraw extends Car {
 			}
 			glEnd();
 		}
-
+	}//renderRays
+	
+	public void renderCar (){
+		
 		if (drawCar){
 			//Draw car
 			glPushMatrix();
@@ -79,7 +91,7 @@ public class CarToDraw extends Car {
 			glTranslated(getX(), getY(), 0);
 			glRotated(180*getZ()/Math.PI,0,0,1);
 			
-			glColor3d(r,g,b);
+			glColor3d(color[0], color[1], color[2]);
 			
 			glBegin(GL_POLYGON);
 				glVertex2d(-5,-5);
@@ -92,6 +104,11 @@ public class CarToDraw extends Car {
 			glPopMatrix();
 		}
 		
+	}//renderCar
+	
+	public void render (){
+		renderRays();
+		renderCar();
 	}//render
 
 }//CarToDraw

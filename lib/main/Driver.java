@@ -65,7 +65,7 @@ public class Driver extends CarToDraw {
 //------------      POLL     -----------     UPDATE         ---------        RENDER        ----------//
 	public void poll (){
 		
-		if (controlKey > 0 && Keyboard.isKeyDown(Keyboard.KEY_0)){
+		if (controlKey > 0 && Keyboard.isKeyDown(controlKey)){
 			if (!alreadySwitched){
 				aiControlled = !aiControlled;
 				alreadySwitched = true;
@@ -107,6 +107,29 @@ public class Driver extends CarToDraw {
 		}
 	}//update
 
+	public void renderCar (){
+		if (!aiControlled){
+			glPushMatrix();
+			glTranslated(getX(), getY(), 0);
+			glRotated(180*getZ()/Math.PI, 0, 0, 1);
+			
+			glColor3f(1,1,0);
+			glBegin(GL_POLYGON);
+				glVertex2f(-7, -7);
+				glVertex2f(7, -7);
+				glVertex2f(15, 0);
+				glVertex2f(7, 7);
+				glVertex2f(-7, 7);
+			glEnd();
+			
+			glPopMatrix();
+		}
+		super.renderCar();
+	}//renderCar
+	public void renderRays (){
+		super.renderRays();
+	}//renderRays
+	
 	public void render (){
 		//BROKEN
 		if (drawPWM){
@@ -137,7 +160,7 @@ public class Driver extends CarToDraw {
 		
 		//Draw the car and rays if so desired
 		super.render();
-	
+		
 	}//render
 
 //-----------------------------------------------------------------------------------------------------//
@@ -173,13 +196,16 @@ public class Driver extends CarToDraw {
 	}
 	public boolean aiControlled(){
 		return aiControlled;
-	}
+	}//aiControlled
 	public void forceCompControl (boolean compControl){
-		aiControlled = compControl;
-	}
+		aiControlled = !compControl;
+	}//forceCompControl
+	public void setControlKey (int key){
+		controlKey = key;
+	}//setControlKey
 	public boolean crashed (){
 		return crashed;
-	}
+	}//crashed
 	
 	public void setControlDisplay (int x, int y, int w, int h){
 		controlDisplay[0] = x;

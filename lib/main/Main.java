@@ -1,6 +1,19 @@
 package main;
 
-import static org.lwjgl.opengl.GL11.*;
+import static org.lwjgl.opengl.GL11.GL_COLOR_BUFFER_BIT;
+import static org.lwjgl.opengl.GL11.GL_DEPTH_BUFFER_BIT;
+import static org.lwjgl.opengl.GL11.GL_MODELVIEW;
+import static org.lwjgl.opengl.GL11.GL_PROJECTION;
+import static org.lwjgl.opengl.GL11.glClear;
+import static org.lwjgl.opengl.GL11.glClearColor;
+import static org.lwjgl.opengl.GL11.glColor3f;
+import static org.lwjgl.opengl.GL11.glLoadIdentity;
+import static org.lwjgl.opengl.GL11.glMatrixMode;
+import static org.lwjgl.opengl.GL11.glOrtho;
+import static org.lwjgl.opengl.GL11.glPopMatrix;
+import static org.lwjgl.opengl.GL11.glPushMatrix;
+import static org.lwjgl.opengl.GL11.glScaled;
+import static org.lwjgl.opengl.GL11.glTranslated;
 
 import java.awt.Color;
 
@@ -9,35 +22,42 @@ import org.lwjgl.input.Keyboard;
 import org.lwjgl.opengl.Display;
 import org.lwjgl.opengl.DisplayMode;
 
-import drawing.CarToDraw;
 import drawing.PathToDraw;
-
+import drawing.View;
+import drawing.Spotlight;
 import drawing.TrackToDraw;
 
 public class Main {
 	
 	public static int maxDistance = 500;
-	private static final int WIDTH = 800;
-	private static final int HEIGHT = 500;
+	public static final int WIDTH = 800;
+	public static final int HEIGHT = 500;
 
-	static double vel = 0.2, da = 0.02, rayScope = Math.PI/2;
+	static double vel = 0.3, da = 0.02, rayScope = Math.PI/2;
 	static int rays = 160;
 
 	static Driver[] cars;
 	static PathToDraw path;
 	static TrackToDraw track;
 	
+	static Spotlight spotlight;
+	static View view;
+	static View trackCamera;
+	
 	public static void main(String[] args) {
 		initGL();
 		
-		cars = new Driver[10];
-		for (int i=0; i<10; i++){
-			cars[i] = new Driver(1, true, i==0?Keyboard.KEY_LSHIFT:-1);
+		cars = new Driver[20];
+		for (int i=0; i<20; i++){
+//			cars[i] = new Driver(1, true, (i==7?Keyboard.KEY_LSHIFT:-1));
+			cars[i] = new Driver(1);
 			cars[i].resetRays(rayScope, rays);
-			cars[i].setVelocities(vel*(i+1)/10.0, da);
-			cars[i].setColor(1-i/10.0, i/10.0, 0);
+			cars[i].setVelocities(vel*(i+1)/20.0, da);
+			cars[i].setColor(1-i/20.0, i/20.0, 0);
 			cars[i].drawRays(false);
+			cars[i].setPID(10, 0, 0);
 		}
+		spotlight = new Spotlight(cars[19]);
 		
 		path = new PathToDraw(100);
 
@@ -48,14 +68,12 @@ public class Main {
 //		path.addArc(Math.PI/16, 16, 20);
 //		path.addLine(Math.PI, 200);
 //		path.addArc(Math.PI/16, 16, 20);
-
 		
 		//Big Track Field
 		path.addLine(0, 1000);
-		path.addArc(Math.PI/16,16, 60);
+		path.addArc(Math.PI/32,32, 60);
 		path.addLine(Math.PI, 1000);
-		path.addArc(Math.PI/16,16, 60);
-//		path.rotate(Math.PI);
+		path.addArc(Math.PI/32,32, 60);
 
 		//Square
 //		path.addLine(0, 200);
@@ -63,13 +81,44 @@ public class Main {
 //		path.addLine(Math.PI, 200);
 //		path.addLine(3*Math.PI/2, 200);
 
+//		path.rotate(4*Math.PI/2);
 		
-		track = new TrackToDraw(path, 60, Color.red);
-		System.out.printf("Track -- (%d, %d, %d, %d)\n",track.getX(), track.getY(), track.getWidth(), track.getHeight());
+		trackCamera = new View ();
+		
+		track = new TrackToDraw(path, 20, Color.red);
+		double[] temp = new double[5];
+		temp[0] = track.getX(); 
+		temp[1] = track.getY(); 
+		temp[2] = track.getWidth();
+		temp[3] = track.getHeight();
+		temp[4] = Math.min(WIDTH/temp[2], HEIGHT/temp[3]);
+		
+		if (temp[2] < WIDTH && temp[1] < HEIGHT){
+			trackCamera.x = WIDTH/2-temp[0]-temp[2]/2;
+			trackCamera.y = HEIGHT/2-temp[1]-temp[3]/2;
+			trackCamera.sf = 1;
+		} else {
+			trackCamera.x = -temp[0];
+			trackCamera.y = -temp[1];
+
+			trackCamera.sf = temp[4];
+
+			if (WIDTH/temp[2] > HEIGHT/temp[3]){
+				trackCamera.x += WIDTH/2/trackCamera.sf;
+				trackCamera.x -= temp[3]/2;
+			} else {
+				trackCamera.y += HEIGHT/2/trackCamera.sf;
+				trackCamera.y -= temp[3]/2;
+			}
+			System.out.println(trackCamera.sf);
+		}
+		view = new View(trackCamera);
 		
 		for (Driver car: cars){
 			car.resetTo(track.getStartX(), track.getStartY(), track.getStartA());
 		}
+		
+		spotlight.setLocation(WIDTH/2-100, HEIGHT/2-100);
 		
 		long lastTime = System.currentTimeMillis();
 		long dt;
@@ -118,32 +167,30 @@ public class Main {
 			}
 		}
 		
+		spotlight.poll(cars);
+		
+		if (spotlight.isFollowing()){
+			view.setView(spotlight.getCarView());
+		} else {
+			view.setView(trackCamera);
+		}
+		
 	}//update
 	
 	public static void render (){
-		glPushMatrix();
-//		glTranslated(-car.getX()+WIDTH/2, -car.getY()+HEIGHT/2, 0);
-
-		double x = track.getX(), y = track.getY(), w = track.getWidth(), h = track.getHeight();
-		if (w < WIDTH && h < HEIGHT){
-			glTranslatef(WIDTH/2, HEIGHT/2, 0);
-			glTranslated(-x, -y, 0);
-			glTranslated(-w/2, -h/2, 0);
-		} else {
-			double scale = Math.min(WIDTH/w, HEIGHT/h);
-			glScaled(scale, scale, 1);
-			glTranslated(-x, -y, 0);
-
-			if (WIDTH/w > HEIGHT/h){
-				glTranslated(w/4, 0, 0);
-			} else {
-				glTranslated(0, h/4, 0);
-			}
 		
-		}
+		spotlight.render();
+		
+		glPushMatrix();
+
+		glScaled(view.sf, view.sf, 1);
+		glTranslated(view.x, view.y,0);
 		
 		for (Driver car: cars){
-			car.render();
+			car.renderRays();
+		}
+		for (Driver car: cars){
+			car.renderCar();
 		}
 		
 		track.render();
@@ -154,6 +201,10 @@ public class Main {
 		glPopMatrix();
 		
 	}//render
+	
+	public static View getView (){
+		return view;
+	}
 	
 	public static void initGL (){
 
@@ -172,7 +223,7 @@ public class Main {
 		glOrtho(0,WIDTH,HEIGHT,0,1,-1);
 		glMatrixMode(GL_MODELVIEW);
 
-		glClearColor(0, 0, 1, 1);
+		glClearColor(0, 0, 0, 0);
 
 	}//initGL
 	
