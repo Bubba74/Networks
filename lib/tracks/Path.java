@@ -10,7 +10,7 @@ public class Path {
 	private int size;
 	private int filled;
 
-	private int[] arr_x, arr_y;
+	private double[] arr_x, arr_y;
 
 
 	public Path getCircle (int center_x, int center_y, int radius, int poly_num){
@@ -38,8 +38,8 @@ public class Path {
 			int line_size -- Length of each line
 		*/
 
-		int start_x = lastX();
-		int start_y = lastY();
+		double start_x = lastX();
+		double start_y = lastY();
 		double start_angle = 0;
 
 		if (getFilled() > 1){
@@ -56,29 +56,34 @@ public class Path {
 		System.out.println(filled);
 		
 		for (int i=0; i<filled; i++){
-			System.out.printf("X: %d, Y: %d\n",getX(i),getY(i));
+			System.out.printf("X: %f, Y: %f\n",getX(i),getY(i));
 		}
 		System.out.println("\n\n\n\n\n\n");
 
 	}//addArc
 	
 	public void addLine (double angle, int line_size){
-		int start_x = lastX();
-		int start_y = lastY();
+		double start_x = lastX();
+		double start_y = lastY();
 
 		addPoint((int)(start_x+line_size*Math.cos(angle))
 					, (int)(start_y+line_size*Math.sin(angle)));
 	}//addLine
 
 	public void rotate (double angle){
+		double cos = Math.cos(angle);
+		double sin = Math.sin(angle);
 		for (int i=0; i<filled; i++){
 			double x = arr_x[i], y = arr_y[i];
-			double d = Math.sqrt(x*x+y*y);
-			double point_angle = Math.atan2(y,x);
-			point_angle += angle;
-			
-			arr_x[i] = (int)(d*Math.cos(point_angle));
-			arr_y[i] = (int)(d*Math.sin(point_angle));
+//			double d = Math.sqrt(x*x+y*y);
+//			double point_angle = Math.atan2(y,x);
+//			point_angle += angle;
+//			
+//			arr_x[i] = (int)(d*Math.cos(point_angle));
+//			arr_y[i] = (int)(d*Math.sin(point_angle));
+
+			arr_x[i] = x*cos-y*sin;
+			arr_y[i] = x*sin+y*cos;
 		}
 	}//rotate
 	
@@ -88,32 +93,32 @@ public class Path {
 		this.size = number_of_tracks;
 		this.filled = 0;
 
-		arr_x = new int[size];
-		arr_y = new int[size];
+		arr_x = new double[size];
+		arr_y = new double[size];
 	}//Track
 
-	public void addPoint (int x, int y){
+	public void addPoint (double x, double y){
 		arr_x[filled] = x;
 		arr_y[filled] = y;
 		filled++;
 	}//addPoint
 
-	public void setPoint (int index, int x, int y){
+	public void setPoint (int index, double x, double y){
 		if (index == filled) filled++;
 		arr_x[index] = x;
 		arr_y[index] = y;
 	}//setPoint
-	public int getX (int index){
+	public double getX (int index){
 		return arr_x[index];
 	}
-	public int lastX (){
+	public double lastX (){
 		if (filled == 0) return 0;
 		return arr_x[filled-1];
 	}
-	public int getY (int index){
+	public double getY (int index){
 		return arr_y[index];
 	}
-	public int lastY(){
+	public double lastY(){
 		if (filled == 0) return 0;
 		return arr_y[filled-1];
 	}

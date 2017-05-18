@@ -12,6 +12,9 @@ todo
 - Store paths (and tracks) as arrays (or lists?) of lines instead of points.
 - Paths should be able to rotate (in real time???)
 
+3. Fix the camera view of the track
+- Hint: it should be good
+
 3. Train neural networks off of PID output? (Variable or PWM?)
 
 

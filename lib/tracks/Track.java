@@ -7,9 +7,8 @@ public class Track {
 	private Path center;
 	private Path left, right;
 	
-	private int start_x, start_y;
 	double start_a;
-	private int x, y, w, h;
+	private double x, y, w, h;
 
 	public double calcRay (double x, double y, double angle){
 
@@ -98,15 +97,13 @@ public class Track {
 		left = new Path (center.getSize());
 		right = new Path (center.getSize());
 		
-		start_x = center.getX(0);
-		start_y = center.getY(0);
 		start_a = Math.atan2(center.getY(1)-center.getY(0), center.getX(1)-center.getX(0));
 		
 		//Center path values
-		int prev_x, prev_y, this_x, this_y, next_x, next_y;
+		double prev_x, prev_y, this_x, this_y, next_x, next_y;
 		
 		//The +- offsets from (this_x, this_y)
-		int dx = 0, dy = 0;
+		double dx = 0, dy = 0;
 		
 		//For some reason, starting at i=0 doesn't work. So instead, we
 		//  start with a filler and set it to the last point at the end.
@@ -134,10 +131,10 @@ public class Track {
 				next_y = center.getY(i+1);
 			}
 
-			int leftDx = prev_x-this_x;
-			int leftDy = prev_y-this_y;
-			int rightDx = next_x-this_x;
-			int rightDy = next_y-this_y;
+			double leftDx = prev_x-this_x;
+			double leftDy = prev_y-this_y;
+			double rightDx = next_x-this_x;
+			double rightDy = next_y-this_y;
 			
 			double left_angle, right_angle;
 			double angle;
@@ -196,17 +193,17 @@ public class Track {
 		
 	}//Track
 	public void calcBounds(){
-		int min_x = Integer.MAX_VALUE;
-		int max_x = Integer.MIN_VALUE;
-		int min_y = Integer.MAX_VALUE;
-		int max_y = Integer.MIN_VALUE;
+		double min_x = Integer.MAX_VALUE;
+		double max_x = Integer.MIN_VALUE;
+		double min_y = Integer.MAX_VALUE;
+		double max_y = Integer.MIN_VALUE;
 		
 		Path[] paths = {left, right};
 		
 		for (Path path: paths)
 			for (int i=0; i<path.getFilled(); i++){
-				int x = path.getX(i);
-				int y = path.getY(i);
+				double x = path.getX(i);
+				double y = path.getY(i);
 				
 				if (x < min_x) min_x = x;
 				else if (x > max_x) max_x = x;
@@ -231,27 +228,36 @@ public class Track {
 	public Path getRightSide (){
 		return right;
 	}
+	public void rotate (double angle){
+		center.rotate(angle);
+		left.rotate(angle);
+		right.rotate(angle);
+		
+		start_a += angle;
+		calcBounds();
+	}//rotate
 	
-	public int getStartX (){
-		return start_x;
+	
+	public double getStartX (){
+		return center.getX(0);
 	}
-	public int getStartY (){
-		return start_y;
+	public double getStartY (){
+		return center.getY(0);
 	}
 	public double getStartA (){
 		return start_a;
 	}
 	
-	public int getX(){
+	public double getX(){
 		return x;
 	}//getX
-	public int getY(){
+	public double getY(){
 		return y;
 	}//getY
-	public int getWidth(){
+	public double getWidth(){
 		return w;
 	}//getWidth
-	public int getHeight(){
+	public double getHeight(){
 		return h;
 	}//getHeight
 	

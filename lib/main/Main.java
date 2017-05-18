@@ -84,35 +84,12 @@ public class Main {
 //		path.rotate(4*Math.PI/2);
 		
 		trackCamera = new View ();
+		view = new View();
 		
 		track = new TrackToDraw(path, 20, Color.red);
-		double[] temp = new double[5];
-		temp[0] = track.getX(); 
-		temp[1] = track.getY(); 
-		temp[2] = track.getWidth();
-		temp[3] = track.getHeight();
-		temp[4] = Math.min(WIDTH/temp[2], HEIGHT/temp[3]);
+
+		updateTrackView();
 		
-		if (temp[2] < WIDTH && temp[1] < HEIGHT){
-			trackCamera.x = WIDTH/2-temp[0]-temp[2]/2;
-			trackCamera.y = HEIGHT/2-temp[1]-temp[3]/2;
-			trackCamera.sf = 1;
-		} else {
-			trackCamera.x = -temp[0];
-			trackCamera.y = -temp[1];
-
-			trackCamera.sf = temp[4];
-
-			if (WIDTH/temp[2] > HEIGHT/temp[3]){
-				trackCamera.x += WIDTH/2/trackCamera.sf;
-				trackCamera.x -= temp[3]/2;
-			} else {
-				trackCamera.y += HEIGHT/2/trackCamera.sf;
-				trackCamera.y -= temp[3]/2;
-			}
-			System.out.println(trackCamera.sf);
-		}
-		view = new View(trackCamera);
 		
 		for (Driver car: cars){
 			car.resetTo(track.getStartX(), track.getStartY(), track.getStartA());
@@ -129,6 +106,9 @@ public class Main {
 			
 			dt = System.currentTimeMillis()-lastTime;
 			lastTime = System.currentTimeMillis();
+			
+			track.rotate(0.0001);
+			updateTrackView();
 			
 			poll();
 			update(dt);
@@ -155,8 +135,7 @@ public class Main {
 			if (Keyboard.isKeyDown(Keyboard.KEY_R)) car.resetTo(path.getX(0), path.getY(0), 0);
 		}
 		
-	}//poll
-	
+	}//poll	
 	public static void update (long dt){
 		
 		for (Driver car: cars){
@@ -196,7 +175,7 @@ public class Main {
 		track.render();
 		
 		glColor3f(1,1,1);
-//		path.render();
+		path.render();
 		
 		glPopMatrix();
 		
@@ -205,6 +184,35 @@ public class Main {
 	public static View getView (){
 		return view;
 	}
+
+	public static void updateTrackView (){
+		double[] temp = new double[5];
+		temp[0] = track.getX(); 
+		temp[1] = track.getY(); 
+		temp[2] = track.getWidth();
+		temp[3] = track.getHeight();
+		temp[4] = Math.min(WIDTH/temp[2], HEIGHT/temp[3]);
+		
+		if (temp[2] < WIDTH && temp[1] < HEIGHT){
+			trackCamera.x = WIDTH/2-temp[0]-temp[2]/2;
+			trackCamera.y = HEIGHT/2-temp[1]-temp[3]/2;
+			trackCamera.sf = 1;
+		} else {
+			trackCamera.x = -temp[0];
+			trackCamera.y = -temp[1];
+
+			trackCamera.sf = temp[4];
+
+			if (WIDTH/temp[2] > HEIGHT/temp[3]){
+				trackCamera.x += WIDTH/2/trackCamera.sf;
+				trackCamera.x -= temp[3]/2;
+			} else {
+				trackCamera.y += HEIGHT/2/trackCamera.sf;
+				trackCamera.y -= temp[3]/2;
+			}
+		}
+		view.setView(trackCamera);
+	}//updateTrackView
 	
 	public static void initGL (){
 
