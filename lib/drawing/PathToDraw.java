@@ -1,8 +1,12 @@
 package drawing;
 
-import static org.lwjgl.opengl.GL11.*;
+import static org.lwjgl.opengl.GL11.GL_LINE_STRIP;
+import static org.lwjgl.opengl.GL11.glBegin;
+import static org.lwjgl.opengl.GL11.glEnd;
+import static org.lwjgl.opengl.GL11.glVertex2d;
 
-import tracks.Path;
+import components.Path;
+
 
 public class PathToDraw extends Path {
 
@@ -32,5 +36,15 @@ public class PathToDraw extends Path {
 		
 		glEnd();
 	}//renderPath
+	
+	public static PathToDraw convertPath (Path p){
+		PathToDraw path = new PathToDraw(p.getFilled());
+		
+		for (int i=0; i<p.getFilled(); i++){
+			path.addPoint(p.getX(i), p.getY(i));
+		}
+		
+		return path;
+	}
 
 }//PathToDraw

@@ -1,6 +1,6 @@
-package main;
+package components;
 
-import tracks.Track;
+import components.Track;
 
 public class Car {
 

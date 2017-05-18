@@ -1,19 +1,6 @@
 package main;
 
-import static org.lwjgl.opengl.GL11.GL_COLOR_BUFFER_BIT;
-import static org.lwjgl.opengl.GL11.GL_DEPTH_BUFFER_BIT;
-import static org.lwjgl.opengl.GL11.GL_MODELVIEW;
-import static org.lwjgl.opengl.GL11.GL_PROJECTION;
-import static org.lwjgl.opengl.GL11.glClear;
-import static org.lwjgl.opengl.GL11.glClearColor;
-import static org.lwjgl.opengl.GL11.glColor3f;
-import static org.lwjgl.opengl.GL11.glLoadIdentity;
-import static org.lwjgl.opengl.GL11.glMatrixMode;
-import static org.lwjgl.opengl.GL11.glOrtho;
-import static org.lwjgl.opengl.GL11.glPopMatrix;
-import static org.lwjgl.opengl.GL11.glPushMatrix;
-import static org.lwjgl.opengl.GL11.glScaled;
-import static org.lwjgl.opengl.GL11.glTranslated;
+import static org.lwjgl.opengl.GL11.*;
 
 import java.awt.Color;
 
@@ -22,10 +9,12 @@ import org.lwjgl.input.Keyboard;
 import org.lwjgl.opengl.Display;
 import org.lwjgl.opengl.DisplayMode;
 
+import components.Path;
+
 import drawing.PathToDraw;
-import drawing.View;
 import drawing.Spotlight;
 import drawing.TrackToDraw;
+import drawing.View;
 
 public class Main {
 	
@@ -59,34 +48,12 @@ public class Main {
 		}
 		spotlight = new Spotlight(cars[19]);
 		
-		path = new PathToDraw(100);
-
-		path.addPoint(0, 0);
-
-		//Small Track Field
-//		path.addLine(0, 200);
-//		path.addArc(Math.PI/16, 16, 20);
-//		path.addLine(Math.PI, 200);
-//		path.addArc(Math.PI/16, 16, 20);
-		
-		//Big Track Field
-		path.addLine(0, 1000);
-		path.addArc(Math.PI/32,32, 60);
-		path.addLine(Math.PI, 1000);
-		path.addArc(Math.PI/32,32, 60);
-
-		//Square
-//		path.addLine(0, 200);
-//		path.addLine(Math.PI/2, 200);
-//		path.addLine(Math.PI, 200);
-//		path.addLine(3*Math.PI/2, 200);
-
-//		path.rotate(4*Math.PI/2);
+		path = PathToDraw.convertPath(Path.importPath("Complex1"));
 		
 		trackCamera = new View ();
 		view = new View();
 		
-		track = new TrackToDraw(path, 20, Color.red);
+		track = new TrackToDraw(path, 80, Color.red);
 
 		updateTrackView();
 		
@@ -107,7 +74,7 @@ public class Main {
 			dt = System.currentTimeMillis()-lastTime;
 			lastTime = System.currentTimeMillis();
 			
-			track.rotate(0.0001);
+			track.rotate(0.001);
 			updateTrackView();
 			
 			poll();
@@ -124,6 +91,8 @@ public class Main {
 	
 	public static void poll (){
 	
+		spotlight.poll(cars);
+
 		for (Driver car: cars){
 			car.poll();
 		}
@@ -145,8 +114,6 @@ public class Main {
 				car.resetTo(track.getStartX(), track.getStartY(), track.getStartA());
 			}
 		}
-		
-		spotlight.poll(cars);
 		
 		if (spotlight.isFollowing()){
 			view.setView(spotlight.getCarView());
@@ -193,7 +160,7 @@ public class Main {
 		temp[3] = track.getHeight();
 		temp[4] = Math.min(WIDTH/temp[2], HEIGHT/temp[3]);
 		
-		if (temp[2] < WIDTH && temp[1] < HEIGHT){
+		if (temp[2] < WIDTH && temp[3] < HEIGHT){
 			trackCamera.x = WIDTH/2-temp[0]-temp[2]/2;
 			trackCamera.y = HEIGHT/2-temp[1]-temp[3]/2;
 			trackCamera.sf = 1;
@@ -205,7 +172,7 @@ public class Main {
 
 			if (WIDTH/temp[2] > HEIGHT/temp[3]){
 				trackCamera.x += WIDTH/2/trackCamera.sf;
-				trackCamera.x -= temp[3]/2;
+				trackCamera.x -= temp[2]/2;
 			} else {
 				trackCamera.y += HEIGHT/2/trackCamera.sf;
 				trackCamera.y -= temp[3]/2;

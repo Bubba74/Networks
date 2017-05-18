@@ -4,8 +4,9 @@ import static org.lwjgl.opengl.GL11.glColor3f;
 
 import java.awt.Color;
 
-import tracks.Path;
-import tracks.Track;
+import components.Path;
+import components.Track;
+
 
 public class TrackToDraw extends Track{
 

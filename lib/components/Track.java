@@ -1,4 +1,4 @@
-package tracks;
+package components;
 
 import main.Main;
 

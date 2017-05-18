@@ -1,9 +1,18 @@
 package drawing;
 
-import static org.lwjgl.opengl.GL11.*;
-
-import main.Car;
+import static org.lwjgl.opengl.GL11.GL_LINES;
+import static org.lwjgl.opengl.GL11.GL_POLYGON;
+import static org.lwjgl.opengl.GL11.glBegin;
+import static org.lwjgl.opengl.GL11.glColor3d;
+import static org.lwjgl.opengl.GL11.glEnd;
+import static org.lwjgl.opengl.GL11.glPopMatrix;
+import static org.lwjgl.opengl.GL11.glPushMatrix;
+import static org.lwjgl.opengl.GL11.glRotated;
+import static org.lwjgl.opengl.GL11.glTranslated;
+import static org.lwjgl.opengl.GL11.glVertex2d;
 import main.Main;
+
+import components.Car;
 
 public class CarToDraw extends Car {
 	
