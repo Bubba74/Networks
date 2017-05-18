@@ -30,8 +30,8 @@ import drawing.TrackToDraw;
 public class Main {
 	
 	public static int maxDistance = 500;
-	public static final int WIDTH = 800;
-	public static final int HEIGHT = 500;
+	public static final int WIDTH = 1800;
+	public static final int HEIGHT = 1000;
 
 	static double vel = 0.3, da = 0.02, rayScope = Math.PI/2;
 	static int rays = 160;
@@ -196,7 +196,7 @@ public class Main {
 		track.render();
 		
 		glColor3f(1,1,1);
-		path.render();
+//		path.render();
 		
 		glPopMatrix();
 		
