@@ -1,0 +1,17 @@
+
+todo
+1. Track management
+- Store multiple tracks (from a folder, share tracks among programs, etc.)
+- Easily create complex tracks
+- Overlapping? == BIG change.
+	- Zed coordinate or simply multiple tracks?
+- Switching between different tracks with the same car pool.
+
+2. Improve the calculation of intersecting lines and such
+- Represent lines as vectors, and calculate intersections without nasty division by zero
+- Store paths (and tracks) as arrays (or lists?) of lines instead of points.
+- Paths should be able to rotate (in real time???)
+
+3. Train neural networks off of PID output? (Variable or PWM?)
+
+
