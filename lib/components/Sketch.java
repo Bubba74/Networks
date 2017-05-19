@@ -1,7 +1,6 @@
 package components;
 
 import java.awt.Point;
-import java.awt.geom.Point2D;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
@@ -10,7 +9,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 
-public class Path {
+public class Sketch {
 
 	/*
 		A collection of consecutive xy coordinates which
@@ -23,11 +22,11 @@ public class Path {
 	private double[] arr_x, arr_y;
 
 
-	public static Path getCircle (int center_x, int center_y, int radius, int poly_num){
+	public static Sketch getCircle (int center_x, int center_y, int radius, int poly_num){
 		//Create a circle of $poly_num+1 line segments centered around the point
 		// (center_x, center_y) with each vertex $radius units from the center
 		// point.
-		Path path = new Path(poly_num+1);
+		Sketch path = new Sketch(poly_num+1);
 
 		double dAngle = 2*Math.PI/poly_num;
 		for (int i=0; i<=poly_num; i++){
@@ -39,8 +38,8 @@ public class Path {
 		return path;
 	}//getCircle
 	
-	public static Path getSmallTrack (){
-		Path path = new Path (1+1+21+1+21);
+	public static Sketch getSmallTrack (){
+		Sketch path = new Sketch (1+1+21+1+21);
 
 		path.addPoint(0,0);
 		//Small Track Field
@@ -52,8 +51,8 @@ public class Path {
 		return path;
 	}//getSmallTrack
 	
-	public static Path getBigTrack (){
-		Path path = new Path (1+1+61+1+61);
+	public static Sketch getBigTrack (){
+		Sketch path = new Sketch (1+1+61+1+61);
 
 		path.addPoint(0,0);
 		//Big Track Field
@@ -65,8 +64,8 @@ public class Path {
 		return path;
 	}//getBigTrack
 	
-	public static Path getSquare (int side){
-		Path path = new Path (5);
+	public static Sketch getSquare (int side){
+		Sketch path = new Sketch (5);
 		
 		path.addPoint(0, 0);
 		//Square
@@ -136,7 +135,7 @@ public class Path {
 		}
 	}//rotate
 
-	public static Path importPath (String pathName){
+	public static Sketch importPath (String pathName){
 		File file = new File("/home/henry/Desktop/Networks/tracks/"+pathName);
 		
 		if (!file.exists()) return null;
@@ -152,13 +151,14 @@ public class Path {
 		scan.next();//Dump 'Size: '
 		
 		int size = scan.nextInt();
-		Path importedPath = new Path (size);
+		Sketch importedPath = new Sketch (size);
 		
 		for (int i=0; i<size; i++){
 			double x = scan.nextDouble();
 			double y = scan.nextDouble();
 			importedPath.addPoint(x,y);
 		}
+		scan.close();
 		
 		return importedPath;
 	}//importPath
@@ -184,12 +184,10 @@ public class Path {
 
 		outputText += "Size: "+points.size()+"\n";
 		
-		for (Point vertex: points){
-			outputText += vertex.getX() + " " + vertex.getY() + "\n";
+		for (Point point : points){
+			outputText += point.getX() + " " + point.getY() + "\n";
 		}
 
-//		System.out.println(outputText);
-		
 		byte[] text = stringToByteArray(outputText);
 		
 		try {
@@ -199,7 +197,7 @@ public class Path {
 		}
 	}//exportPath
 	
-	public static void exportPath (String name, Path path) {
+	public static void exportPath (String name, Sketch path) {
 		List<Point> points = new ArrayList<Point>();
 
 		for (int i=0; i>path.getFilled(); i++){
@@ -222,7 +220,7 @@ public class Path {
 	
 	//-----------Basic Methods------------//
 
-	public Path (int number_of_tracks){
+	public Sketch (int number_of_tracks){
 		this.size = number_of_tracks;
 		this.filled = 0;
 

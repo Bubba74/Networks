@@ -1,47 +1,46 @@
 package drawing;
 
-import static org.lwjgl.opengl.GL11.GL_LINE_STRIP;
-import static org.lwjgl.opengl.GL11.glBegin;
-import static org.lwjgl.opengl.GL11.glEnd;
-import static org.lwjgl.opengl.GL11.glVertex2d;
+import static org.lwjgl.opengl.GL11.*;
 
-import components.Path;
+import components.LinePath;
+import components.Sketch;
 
 
-public class PathToDraw extends Path {
+public class PathToDraw extends LinePath {
 
-	public PathToDraw (int size){
-		super(size);
+	public PathToDraw (){
+		super();
 	}
 
 	public void render (){
 		
 		glBegin(GL_LINE_STRIP);
 		
-		for (int i=0; i<getFilled(); i++){
-			glVertex2d(getX(i), getY(i));
+		for (int i=0; i<size(); i++){
+			glVertex2d(getLine(i).x1,
+						getLine(i).y1);
 		}
 
 		glEnd();
 		
 	}//render
 	
-	public static void renderPath (Path path){
-		
+	public static void renderPath (LinePath path){
 		glBegin(GL_LINE_STRIP);
 		
-		for (int i=0; i<path.getFilled(); i++){
-			glVertex2d(path.getX(i), path.getY(i));
+		for (int i=0; i<path.size(); i++){
+			glVertex2d(path.getLine(i).x1,
+						path.getLine(i).y1);
 		}
 		
 		glEnd();
 	}//renderPath
 	
-	public static PathToDraw convertPath (Path p){
-		PathToDraw path = new PathToDraw(p.getFilled());
+	public static PathToDraw convertPath (LinePath p){
+		PathToDraw path = new PathToDraw();
 		
-		for (int i=0; i<p.getFilled(); i++){
-			path.addPoint(p.getX(i), p.getY(i));
+		for (int i=0; i<p.size(); i++){
+			path.addLine(p.getLine(i));
 		}
 		
 		return path;

@@ -9,7 +9,8 @@ import org.lwjgl.input.Keyboard;
 import org.lwjgl.opengl.Display;
 import org.lwjgl.opengl.DisplayMode;
 
-import components.Path;
+import components.LinePath;
+import components.Sketch;
 
 import drawing.PathToDraw;
 import drawing.Spotlight;
@@ -48,7 +49,7 @@ public class Main {
 		}
 		spotlight = new Spotlight(cars[19]);
 		
-		path = PathToDraw.convertPath(Path.importPath("Complex1"));
+		path = PathToDraw.convertPath(new LinePath(Sketch.importPath("BigTrack")));
 		
 		trackCamera = new View ();
 		view = new View();
@@ -59,7 +60,7 @@ public class Main {
 		
 		
 		for (Driver car: cars){
-			car.resetTo(track.getStartX(), track.getStartY(), track.getStartA());
+			car.resetTo(track.getStartX(), track.getStartY(), track.getStartAngle());
 		}
 		
 		spotlight.setLocation(WIDTH/2-100, HEIGHT/2-100);
@@ -74,7 +75,7 @@ public class Main {
 			dt = System.currentTimeMillis()-lastTime;
 			lastTime = System.currentTimeMillis();
 			
-			track.rotate(0.001);
+//			track.rotate(0.001);
 			updateTrackView();
 			
 			poll();
@@ -101,7 +102,7 @@ public class Main {
 			if (Keyboard.isKeyDown(Keyboard.KEY_UP)) car.accelerate(0.001);
 			if (Keyboard.isKeyDown(Keyboard.KEY_DOWN)) car.accelerate(-0.001);
 			if (Keyboard.isKeyDown(Keyboard.KEY_SPACE)) car.stop();
-			if (Keyboard.isKeyDown(Keyboard.KEY_R)) car.resetTo(path.getX(0), path.getY(0), 0);
+			if (Keyboard.isKeyDown(Keyboard.KEY_R)) car.resetTo(track.getStartX(), track.getStartY(), track.getStartAngle());
 		}
 		
 	}//poll	
@@ -111,7 +112,7 @@ public class Main {
 			car.update(track, (int)dt);
 	
 			if (car.crashed()){
-				car.resetTo(track.getStartX(), track.getStartY(), track.getStartA());
+				car.resetTo(track.getStartX(), track.getStartY(), track.getStartAngle());
 			}
 		}
 		

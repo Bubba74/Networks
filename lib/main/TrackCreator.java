@@ -13,7 +13,7 @@ import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.Display;
 import org.lwjgl.opengl.DisplayMode;
 
-import components.Path;
+import components.Sketch;
 
 public class TrackCreator {
 	
@@ -57,7 +57,7 @@ public class TrackCreator {
 		String pathName = input.next();
 		System.out.println("\nExcellent!!!");
 		
-		Path.exportPath(pathName, points);
+		Sketch.exportPath(pathName, points);
 		System.out.println("Track saved as "+pathName+"!");
 		
 	}//saveTrack

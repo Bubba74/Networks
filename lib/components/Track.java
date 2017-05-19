@@ -4,10 +4,10 @@ import main.Main;
 
 public class Track {
 
-	private Path center;
-	private Path left, right;
+	private LinePath center;
+	private LinePath left, right;
 	
-	double start_a;
+	private double start_a;
 	private double x, y, w, h;
 
 	public double calcRay (double x, double y, double angle){
@@ -29,19 +29,18 @@ public class Track {
 			b = y-m*x;
 		}
 
-		Path[] paths = {left, right};
-		for (Path p: paths){
+		LinePath[] paths = {left, right};
+		for (LinePath p: paths){
 
-			//Left Path
-			for (int i=0; i<center.getFilled(); i++){
+			for (int i=0; i<p.size(); i++){
 				double x1, y1, x2, y2;
-			
+				Line line = p.getLine(i);
 				
-				x1 = p.getX(i);
-				y1 = p.getY(i);
-				x2 = p.getX((i+1<center.getFilled()?i+1:0));
-				y2 = p.getY((i+1<center.getFilled()?i+1:0));
-	
+				x1 = line.x1;
+				y1 = line.y1;
+				x2 = line.x2;
+				y2 = line.y2;
+				
 				if (x2-x1 == 0){
 					if (verticalRay){
 						//Ignore vertical ray contacting vertical line segments
@@ -84,9 +83,8 @@ public class Track {
 		}//loop over vertices
 		return minimum;
 	}//calcRay
-
 				
-	public Track (Path center_path, int radius){
+	public Track (LinePath center_path, int radius){
 		
 		/*
 		 * This constructor accepts a Path and a path radius;
@@ -94,47 +92,26 @@ public class Track {
 		 * path, spaced radius away from the center.
 		 */
 		this.center = center_path;
-		left = new Path (center.getSize());
-		right = new Path (center.getSize());
+		left = new LinePath ();
+		right = new LinePath ();
 		
-		start_a = Math.atan2(center.getY(1)-center.getY(0), center.getX(1)-center.getX(0));
-		
-		//Center path values
-		double prev_x, prev_y, this_x, this_y, next_x, next_y;
+		Line first = center.getLine(0);
+		start_a = Math.atan2(first.y2-first.y1, first.x2-first.x1);
 		
 		//The +- offsets from (this_x, this_y)
 		double dx = 0, dy = 0;
-		
-		//For some reason, starting at i=0 doesn't work. So instead, we
-		//  start with a filler and set it to the last point at the end.
-		
-		left.addPoint(0,0);
-		right.addPoint(0,0);
-		
-		for (int i=1; i<center.getFilled(); i++){
-			//Get x,y coords for last, this, and next points on center path.
-			if (i == 0){
-				prev_x = center.lastX();
-				prev_y = center.lastY();
-			} else {
-				prev_x = center.getX(i-1);
-				prev_y = center.getY(i-1);
-			}
-			this_x = center.getX(i);
-			this_y = center.getY(i);
-			
-			if (i+1 == center.getFilled()){
-				next_x = center.getX(0);
-				next_y = center.getY(0);
-			} else {
-				next_x = center.getX(i+1);
-				next_y = center.getY(i+1);
-			}
 
-			double leftDx = prev_x-this_x;
-			double leftDy = prev_y-this_y;
-			double rightDx = next_x-this_x;
-			double rightDy = next_y-this_y;
+		left.addLine(0, 0, 0, 0);
+		right.addLine(0, 0, 0, 0);
+		for (int i=0; i<center.size(); i++){
+			//Get x,y coords for last, this, and next points on center path.
+			
+			Line l1 = center.getLine(i-1), l2 = center.getLine(i);
+			
+			double leftDx = l1.x1-l2.x1;
+			double leftDy = l1.y1-l2.y1;
+			double rightDx = l2.x2-l2.x1;
+			double rightDy = l2.y2-l2.y1;
 			
 			double left_angle, right_angle;
 			double angle;
@@ -152,42 +129,25 @@ public class Track {
 			dx = (int)(radius*Math.cos(angle));
 			dy = (int)(radius*Math.sin(angle));
 
+			double left_x = l2.x1 - dx, left_y = l2.y1 - dy;
+			double right_x = left_x + 2*dx, right_y = left_y + 2*dy;
 			
-			left.addPoint(this_x - dx, this_y - dy);
-			right.addPoint(this_x + dx, this_y + dy);
+			left.lastLine().x2 = left_x;
+			left.lastLine().y2 = left_y;
+			right.lastLine().x2 = right_x;
+			right.lastLine().y2 = right_y;
 			
-			/*
-			 * Trying not to create crossovers
-				double tx, ty;
-			if (i==1){
-				left.addPoint(this_x - dx, this_y - dy);
-				right.addPoint(this_x + dx, this_y + dy);
-			}else {
-
-				tx = this_x - dx;
-				ty = this_y - dy;
-				double addToLeft = (left.lastX()-tx)*(left.lastX()-tx)+(left.lastY()-ty)*(left.lastY()-ty)
-									+(right.lastX()-tx)*(right.lastX()-tx)+(right.lastX()-tx)*(right.lastX()-tx);
-				tx = this_x + dx;
-				ty = this_y + dy;
-				double addToRight = (left.lastX()-tx)*(left.lastX()-tx)+(left.lastY()-ty)*(left.lastY()-ty)
-						+(right.lastX()-tx)*(right.lastX()-tx)+(right.lastX()-tx)*(right.lastX()-tx);
-	
-				if (addToLeft < addToRight){
-					left.addPoint(this_x - dx, this_y - dy);
-					right.addPoint(this_x + dx, this_y + dy);
-				} else {
-					left.addPoint(this_x + dx, this_y + dy);
-					right.addPoint(this_x - dx, this_y - dy);
-				}
-			}
-			 */
+			left.addLine(left_x, left_y, 0, 0);
+			right.addLine(right_x, right_y, 0, 0);
  
-//			System.out.printf("Avgx: %f\tAvgy: %f\t\tDx: %f\tDy: %f\n", avg_x, avg_y, dx, dy);
-			
 		}//for loop
-		left.setPoint(0, left.lastX(), left.lastY());
-		right.setPoint(0, right.lastX(), right.lastY());
+		
+		left.getLine(0).y1 = left.getLine(left.size()-2).y2;
+		left.getLine(0).x1 = left.getLine(left.size()-2).x2;
+		
+		right.getLine(0).y1 = right.getLine(right.size()-2).y2;
+		right.getLine(0).x1 = right.getLine(right.size()-2).x2;
+		
 		
 		calcBounds();
 		
@@ -198,12 +158,13 @@ public class Track {
 		double min_y = Integer.MAX_VALUE;
 		double max_y = Integer.MIN_VALUE;
 		
-		Path[] paths = {left, right};
+		LinePath[] paths = {left, right};
 		
-		for (Path path: paths)
-			for (int i=0; i<path.getFilled(); i++){
-				double x = path.getX(i);
-				double y = path.getY(i);
+		for (LinePath path: paths)
+			for (int i=0; i<path.size(); i++){
+				Line line = path.getLine(i);
+				double x = line.x1;
+				double y = line.y1;
 				
 				if (x < min_x) min_x = x;
 				else if (x > max_x) max_x = x;
@@ -219,13 +180,13 @@ public class Track {
 		
 	}//calcBounds
 	
-	public Path getCenterPath (){
+	public LinePath getCenterPath (){
 		return center;
 	}
-	public Path getLeftSide (){
+	public LinePath getLeftSide (){
 		return left;
 	}
-	public Path getRightSide (){
+	public LinePath getRightSide (){
 		return right;
 	}
 	public void rotate (double angle){
@@ -234,19 +195,19 @@ public class Track {
 		right.rotate(angle);
 		
 		start_a += angle;
+		
 		calcBounds();
 	}//rotate
 	
-	
 	public double getStartX (){
-		return center.getX(0);
+		return center.getLine(0).x1;
 	}
 	public double getStartY (){
-		return center.getY(0);
+		return center.getLine(0).y1;
 	}
-	public double getStartA (){
+	public double getStartAngle(){
 		return start_a;
-	}
+	}//getStartAngle
 	
 	public double getX(){
 		return x;

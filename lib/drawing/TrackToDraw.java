@@ -4,7 +4,8 @@ import static org.lwjgl.opengl.GL11.glColor3f;
 
 import java.awt.Color;
 
-import components.Path;
+import components.LinePath;
+import components.Sketch;
 import components.Track;
 
 
@@ -13,7 +14,7 @@ public class TrackToDraw extends Track{
 	private Color color;
 	private int r, g, b;
 	
-	public TrackToDraw (Path center, int radius, Color c){
+	public TrackToDraw (LinePath center, int radius, Color c){
 		super (center, radius);
 		
 		color = c;
