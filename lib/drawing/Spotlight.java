@@ -1,16 +1,6 @@
 package drawing;
 
-import static org.lwjgl.opengl.GL11.GL_LINES;
-import static org.lwjgl.opengl.GL11.GL_QUADS;
-import static org.lwjgl.opengl.GL11.glBegin;
-import static org.lwjgl.opengl.GL11.glColor3d;
-import static org.lwjgl.opengl.GL11.glColor3f;
-import static org.lwjgl.opengl.GL11.glEnd;
-import static org.lwjgl.opengl.GL11.glPopMatrix;
-import static org.lwjgl.opengl.GL11.glPushMatrix;
-import static org.lwjgl.opengl.GL11.glTranslatef;
-import static org.lwjgl.opengl.GL11.glVertex2d;
-import static org.lwjgl.opengl.GL11.glVertex2f;
+import static org.lwjgl.opengl.GL11.*;
 import main.Driver;
 import main.Main;
 
@@ -74,7 +64,7 @@ public class Spotlight {
 						int by = (my-box[1]-10) /50;
 						int bi = bx*2+by;
 						
-						System.out.println(bi);
+//						System.out.println(bi);
 						switch (bi){
 						case 0:
 							followCar = true;
@@ -169,11 +159,16 @@ public class Spotlight {
 		
 		glPopMatrix();
 	
-		//Draw Line to where the spotlight car is
+		//Draw Circle around where the spotlight car is
+		double tx = gridToScreen(car.getX(),  true), ty = gridToScreen(car.getY(), false);
+		double radius = 30;
+		double count = 20;
+		double da = 2*Math.PI/count;
 		glColor3f(1,1,1);
-		glBegin(GL_LINES);
-			glVertex2f(box[0]+190, box[1]+90);
-			glVertex2d(gridToScreen(car.getX(), true), gridToScreen(car.getY(), false));
+		glBegin(GL_LINE_STRIP);
+			for (int i=0; i<=count; i++){
+				glVertex2d(tx+radius*Math.cos(i*da), ty+radius*Math.sin(i*da));
+			}
 		glEnd();
 		
 		//Draw velocity line

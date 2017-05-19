@@ -48,7 +48,7 @@ public class Main {
 		}
 		spotlight = new Spotlight(cars[19]);
 		
-		path = PathToDraw.convertPath(Path.importPath("Complex1"));
+		path = PathToDraw.convertPath(Path.importPath("Square_400"));
 		
 		trackCamera = new View ();
 		view = new View();
