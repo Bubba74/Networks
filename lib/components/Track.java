@@ -103,7 +103,7 @@ public class Track {
 
 		left.addLine(0, 0, 0, 0);
 		right.addLine(0, 0, 0, 0);
-		for (int i=0; i<center.size(); i++){
+		for (int i=2; i<center.size(); i++){
 			//Get x,y coords for last, this, and next points on center path.
 			
 			Line l1 = center.getLine(i-1), l2 = center.getLine(i);
