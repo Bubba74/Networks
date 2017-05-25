@@ -48,14 +48,14 @@ public class Main {
 		}
 		spotlight = new Spotlight(cars[19]);
 		
-		path = PathToDraw.convertPath(Path.importPath("Square_400"));
+//		path = PathToDraw.convertPath(Path.importPath("Square_400"));
 //		path = PathToDraw.convertPath(Path.getBigTrack());
-//		path = PathToDraw.convertPath(Path.importPath("Complex1"));
+		path = PathToDraw.convertPath(Path.importPath("Complex1"));
 		
 		trackCamera = new View ();
 		view = new View();
 		
-		track = new TrackToDraw(path, 80, Color.red);
+		track = new TrackToDraw(path, 20, Color.red);
 
 		updateTrackView();
 		track.rotate(0.000);
