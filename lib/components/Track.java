@@ -152,40 +152,13 @@ public class Track {
 			dx = (int)(radius*Math.cos(angle));
 			dy = (int)(radius*Math.sin(angle));
 
-			
 			left.addPoint(this_x - dx, this_y - dy);
 			right.addPoint(this_x + dx, this_y + dy);
 			
-			/*
-			 * Trying not to create crossovers
-				double tx, ty;
-			if (i==1){
-				left.addPoint(this_x - dx, this_y - dy);
-				right.addPoint(this_x + dx, this_y + dy);
-			}else {
-
-				tx = this_x - dx;
-				ty = this_y - dy;
-				double addToLeft = (left.lastX()-tx)*(left.lastX()-tx)+(left.lastY()-ty)*(left.lastY()-ty)
-									+(right.lastX()-tx)*(right.lastX()-tx)+(right.lastX()-tx)*(right.lastX()-tx);
-				tx = this_x + dx;
-				ty = this_y + dy;
-				double addToRight = (left.lastX()-tx)*(left.lastX()-tx)+(left.lastY()-ty)*(left.lastY()-ty)
-						+(right.lastX()-tx)*(right.lastX()-tx)+(right.lastX()-tx)*(right.lastX()-tx);
-	
-				if (addToLeft < addToRight){
-					left.addPoint(this_x - dx, this_y - dy);
-					right.addPoint(this_x + dx, this_y + dy);
-				} else {
-					left.addPoint(this_x + dx, this_y + dy);
-					right.addPoint(this_x - dx, this_y - dy);
-				}
-			}
-			 */
- 
 //			System.out.printf("Avgx: %f\tAvgy: %f\t\tDx: %f\tDy: %f\n", avg_x, avg_y, dx, dy);
 			
 		}//for loop
+		
 		left.setPoint(0, left.lastX(), left.lastY());
 		right.setPoint(0, right.lastX(), right.lastY());
 		
