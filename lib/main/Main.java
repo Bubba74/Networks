@@ -49,12 +49,14 @@ public class Main {
 		spotlight = new Spotlight(cars[19]);
 		
 //		path = PathToDraw.convertPath(Path.importPath("Square_400"));
-		path = PathToDraw.convertPath(Path.importPath("Complex1"));
+		path = PathToDraw.convertPath(Path.importPath("Complex2"));
+//		path = PathToDraw.convertPath(Path.importPath("Blob"));
+//		path = PathToDraw.convertPath(Path.importPath("BigTrack"));
 		
 		trackCamera = new View ();
 		view = new View();
 		
-		track = new TrackToDraw(path, 80, Color.red);
+		track = new TrackToDraw(path, 40, Color.red);
 
 		updateTrackView();
 		
@@ -75,7 +77,7 @@ public class Main {
 			dt = System.currentTimeMillis()-lastTime;
 			lastTime = System.currentTimeMillis();
 			
-//			track.rotate(0.001);
+			track.rotate(0.001);
 			updateTrackView();
 			
 			poll();
@@ -126,13 +128,15 @@ public class Main {
 	
 	public static void render (){
 		
-		spotlight.render();
 		
 		glPushMatrix();
 
 		glScaled(view.sf, view.sf, 1);
 		glTranslated(view.x, view.y,0);
 		
+		track.fill(0, 0.2, 0);
+		track.render();
+
 		for (Driver car: cars){
 			car.renderRays();
 		}
@@ -140,12 +144,11 @@ public class Main {
 			car.renderCar();
 		}
 		
-		track.render();
-		
-		glColor3f(1,1,1);
-		path.render();
+//		glColor3f(1,1,1);
+//		path.render();
 		
 		glPopMatrix();
+		spotlight.render();
 		
 	}//render
 	
@@ -199,7 +202,7 @@ public class Main {
 		glOrtho(0,WIDTH,HEIGHT,0,1,-1);
 		glMatrixMode(GL_MODELVIEW);
 
-		glClearColor(0, 0, 0, 0);
+		glClearColor(0, 0.2f, 0, 0);
 
 	}//initGL
 	

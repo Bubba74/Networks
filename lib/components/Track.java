@@ -1,5 +1,7 @@
 package components;
 
+import java.awt.geom.Line2D;
+
 import main.Main;
 
 public class Track {
@@ -151,7 +153,89 @@ public class Track {
 			
 			dx = (int)(radius*Math.cos(angle));
 			dy = (int)(radius*Math.sin(angle));
+			
+			/*
+			 * An Attempt to figure out if dx,dy should switch, based off of the direction
+			 * from next_x,next_y back to prev_x,prev_y
+			 * 
+				if (next_x-prev_x >= 0){
+				if (next_y-prev_y >= 0){
+					
+				} else {
+					dx *= -1;
+					dy *= -1;
+				}
+				} else {
+					if (next_y-prev_y > 0){
+					} else {
+						dx *= -1;
+						dy *= -1;
+					}
+				}
+			 * 
+			 */
+			
+			/* 
+			 * An attempt to figure out if dx,dy should switch, based off of the intersection
+			 * of these two points. (The tracks *should* be parallel)
+			 * 
 
+			double scale = 0.5;
+			dx /= scale;
+			dy /= scale;
+			
+			if (Line2D.linesIntersect(left.lastX(), left.lastY(), this_x-dx, this_y-dy,
+					right.lastX(), right.lastY(), this_x+dx, this_y+dy)){
+				dx *= -1;
+				dy *= -1;
+			}
+			
+			dx *= scale;
+			dy *= scale;
+			
+			 */
+			
+
+			/*
+			 * An attempt to figure out if dx,dy should switch, based off of the correlation
+			 * between crossing slopes from left_x,left_y and right_x,right_y to the extensions.
+			 * More crossing lines are bad.
+			 * 
+			
+			 */
+
+			double dx1 = (this_x-dx - left.lastX()),  dy1 = (this_y-dy  - left.lastY());
+			double dx2 = (this_x+dx - right.lastX()),  dy2 = (this_y+dy  - right.lastY());
+			double dx3 = (this_x+dx - left.lastX()),  dy3 = (this_y+dy  - left.lastY());
+			double dx4 = (this_x-dx - right.lastX()),  dy4 = (this_y-dy  - right.lastY());
+			
+//			if (Math.abs(Math.atan2(dy1,dx1)-Math.atan2(dy2, dx2)) > Math.abs(Math.atan2(dy3,dx3) - Math.atan2(dy4,dx4)) ){
+
+			double da1 = Math.atan2(dy1, dx1)-Math.atan2(dy2,dx2);
+			da1 = Math.abs(da1);
+			if (da1 >= Math.PI) da1 -= 2*Math.PI;
+			da1 = Math.abs(da1);
+			
+			double da2 = Math.atan2(dy3, dx3)-Math.atan2(dy4,dx4);
+			da2 = Math.abs(da2);
+			if (da2 >= Math.PI) da2 -= 2*Math.PI;
+			da2 = Math.abs(da2);
+			
+			if (da1 > da2){
+				dx *= -1;
+				dy *= -1;
+				System.out.printf("i: %d, Dx1: %f,  Dy1: %f,  Dx2: %f,  Dy2: %f,    Dx3: %f,  Dy3: %f,  Dxr: %f,  Dy4: %f\n",
+						i, dx1, dy1, dx2, dy2, dx3, dy3, dx4, dy4);
+			}
+			else {
+			}
+			
+			/*
+			 * An attempt to figure out if dx,dy should switch, based off of the
+			 */
+			
+			
+			
 			left.addPoint(this_x - dx, this_y - dy);
 			right.addPoint(this_x + dx, this_y + dy);
 			
@@ -165,6 +249,7 @@ public class Track {
 		calcBounds();
 		
 	}//Track
+	
 	public void calcBounds(){
 		double min_x = Integer.MAX_VALUE;
 		double max_x = Integer.MIN_VALUE;
