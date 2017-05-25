@@ -94,104 +94,171 @@ public class Track {
 		 * path, spaced radius away from the center.
 		 */
 		this.center = center_path;
+		
+		System.out.println("\n\nCenter\n");
+		for (int i=0; i<center.getFilled(); i++){
+			System.out.printf("x is: %f,  y is: %f\n", center.getX(i), center.getY(i));
+		}
+		
 		left = new Path (center.getSize());
 		right = new Path (center.getSize());
 		
 		start_a = Math.atan2(center.getY(1)-center.getY(0), center.getX(1)-center.getX(0));
 		
-		//Center path values
-		double prev_x, prev_y, this_x, this_y, next_x, next_y;
+		//Path->Track Transformation
 		
-		//The +- offsets from (this_x, this_y)
-		double dx = 0, dy = 0;
-		
-		//For some reason, starting at i=0 doesn't work. So instead, we
-		//  start with a filler and set it to the last point at the end.
-		
-		left.addPoint(0,0);
-		right.addPoint(0,0);
-		
-		for (int i=1; i<center.getFilled(); i++){
+		for (int i=0; i<center.getFilled(); i++){
 			//Get x,y coords for last, this, and next points on center path.
-			if (i == 0){
-				prev_x = center.lastX();
-				prev_y = center.lastY();
-			} else {
-				prev_x = center.getX(i-1);
-				prev_y = center.getY(i-1);
-			}
-			this_x = center.getX(i);
-			this_y = center.getY(i);
-			
-			if (i+1 == center.getFilled()){
-				next_x = center.getX(0);
-				next_y = center.getY(0);
-			} else {
-				next_x = center.getX(i+1);
-				next_y = center.getY(i+1);
-			}
 
-			double leftDx = prev_x-this_x;
-			double leftDy = prev_y-this_y;
-			double rightDx = next_x-this_x;
-			double rightDy = next_y-this_y;
-			
-			double left_angle, right_angle;
-			double angle;
-			
-			left_angle = Math.atan2(leftDy, leftDx);
-			right_angle = Math.atan2(rightDy, rightDx);
-			
-			if (left_angle == 0) left_angle = 2*Math.PI;
-			
-			double avg_x = (Math.cos(left_angle)+Math.cos(right_angle))/2;
-			double avg_y = (Math.sin(left_angle)+Math.sin(right_angle))/2;
-
-			angle = Math.atan2(avg_y, avg_x);
-			
-			dx = (int)(radius*Math.cos(angle));
-			dy = (int)(radius*Math.sin(angle));
-
-			
-			left.addPoint(this_x - dx, this_y - dy);
-			right.addPoint(this_x + dx, this_y + dy);
+			double[] coords = new double[8];
 			
 			/*
-			 * Trying not to create crossovers
-				double tx, ty;
-			if (i==1){
-				left.addPoint(this_x - dx, this_y - dy);
-				right.addPoint(this_x + dx, this_y + dy);
-			}else {
-
-				tx = this_x - dx;
-				ty = this_y - dy;
-				double addToLeft = (left.lastX()-tx)*(left.lastX()-tx)+(left.lastY()-ty)*(left.lastY()-ty)
-									+(right.lastX()-tx)*(right.lastX()-tx)+(right.lastX()-tx)*(right.lastX()-tx);
-				tx = this_x + dx;
-				ty = this_y + dy;
-				double addToRight = (left.lastX()-tx)*(left.lastX()-tx)+(left.lastY()-ty)*(left.lastY()-ty)
-						+(right.lastX()-tx)*(right.lastX()-tx)+(right.lastX()-tx)*(right.lastX()-tx);
-	
-				if (addToLeft < addToRight){
-					left.addPoint(this_x - dx, this_y - dy);
-					right.addPoint(this_x + dx, this_y + dy);
-				} else {
-					left.addPoint(this_x + dx, this_y + dy);
-					right.addPoint(this_x - dx, this_y - dy);
-				}
-			}
+			 * 0 -- x1 of previous line
+			 * 1 -- y1 of previous line
+			 * 2 -- x2 of previous line
+			 * 3 -- y2 of previous line
+			 * 
+			 * 4 -- x1 of this line
+			 * 5 -- y1 of this line
+			 * 6 -- x2 of this line
+			 * 7 -- y2 of this line
+			 * 
 			 */
- 
-//			System.out.printf("Avgx: %f\tAvgy: %f\t\tDx: %f\tDy: %f\n", avg_x, avg_y, dx, dy);
+			
+			coords[0] = center.getX(i-1);
+			coords[1] = center.getY(i-1);
+			
+			coords[2] = coords[4] = center.getX(i);
+			coords[3] = coords[5] = center.getY(i);
+			
+			coords[6] = center.getX(i+1);
+			coords[7] = center.getY(i+1);
+			
+			//Take two connected lines, and move them to the left.
+			double[] newCoords = getLeftLines(coords, radius);
+			
+			if (i < 3){
+				System.out.println("Coords: {");
+				for (double d: coords)
+					System.out.print("  "+d);
+
+				System.out.println("  }\nCoord2: {");
+				for (double d: newCoords)
+					System.out.print("  "+d);
+				System.out.println("  }\n");
+			}
+			
+			//Calculate intersection of these two new lines
+			double intercept = getIntersection (newCoords);
+			
+			//Take either line and find that (x,y) coordinate of intersection
+				//This is the new (x,y) pair for the left path
+			double dx = newCoords[2]-newCoords[0];
+			double dy = newCoords[3]-newCoords[1];
+			double r = Math.sqrt(dx*dx+dy*dy);
+			dx /= r;
+			dy /= r;
+			
+			double left_x = newCoords[0]+(intercept-newCoords[0])*dx;
+			double left_y = newCoords[1]+(intercept-newCoords[0])*dy;
+			left.addPoint(left_x, left_y);
+			
+			//Reflect this pair across the corresponding (x,y)
+				//This is the new (x,y) pair for the right path
+				right.addPoint(-left_x+2*coords[2], -left_y+2*coords[3]);
 			
 		}//for loop
-		left.setPoint(0, left.lastX(), left.lastY());
-		right.setPoint(0, right.lastX(), right.lastY());
 		
 		calcBounds();
 		
 	}//Track
+	
+	public double[] getLeftLines (double[] coords, int radius){
+		double[] newCoords = new double[8];
+		for (int i=0; i<coords.length; i++) newCoords[i] = coords[i];
+		
+		//First line
+		double dx = coords[2]-coords[0];
+		double dy = coords[3]-coords[1];
+		
+//		if (reflectDeltas(dx,dy)){
+//			dx *= -1;
+//			dy *= -1;
+//		}
+		
+		double r = 1/Math.sqrt(dx*dx+dy*dy);
+		dx *= r;
+		dy *= r;
+		
+		newCoords[0] += radius*dy;
+		newCoords[1] -= radius*dx;
+		newCoords[2] += radius*dy;
+		newCoords[3] -= radius*dx;
+
+		//Second line
+		dx = coords[6]-coords[4];
+		dy = coords[7]-coords[5];
+		
+		r = 1/Math.sqrt(dx*dx+dy*dy);
+		dx *= r;
+		dy *= r;
+		
+//		if (reflectDeltas(dx,dy)){
+//			dx *= -1;
+//			dy *= -1;
+//		}
+		
+		newCoords[4] += radius*dy;
+		newCoords[5] -= radius*dx;
+		newCoords[6] += radius*dy;
+		newCoords[7] -= radius*dx;
+		
+		return newCoords;
+	}//getLeftLines
+	
+	private boolean reflectDeltas(double dx, double dy){
+		boolean reflect = false;
+		
+//		if ()
+		
+		
+		
+		return reflect;
+	}//reflectDeltas
+	
+	private double getIntersection (double[] coords){
+
+		/*
+		(x-x1)*(y2-y1)/(x2-x1) + y1    ==  (x-x3)*(y4-y3)/(x4-x3) + y3;
+		(x-x1)*(y2-y1)(x4-x3) + y1(x2-x1)(x4-x3)   == (x-x3)*(y4-y3)(x2-x1) + y3(x2-x1)(x4-x3);
+		(x-x1)*(y2-y1)*(x4-x3) - (x-x3)*(y4-y3)*(x2-x1)   ====    y3*(x2-x1)*(x4-x3) - y1*(x2-x1)*(x4-x3)
+		x*(y2-y1)*(x4-x3) - x1*(y2-y1)*(x4-x3) - x*(y4-y3)*(x2-x1) + x3*(y4-y3)*(x2-x1)   ==  y3*(x2-x1)*(x4-x3) - y1*(x2-x1)*(x4-x3)
+		x*(   (y2-y1)*(x4-x3) - (y4-y3)*(x2-x1)  )  == y3*(x2-x1)*(x4-x3) - y1*(x2-x1)*(x4-x3)  +  x1*(y2-y1)*(x4-x3)  -  x3*(y4-y3)*(x2-x1)
+		x ==  (        y3*(x2-x1)*(x4-x3) - y1*(x2-x1)*(x4-x3)  +  x1*(y2-y1)*(x4-x3)  -  x3*(y4-y3)*(x2-x1)          )   /  (  (y2-y1)*(x4-x3) - (y4-y3)*(x2-x1)   )
+		*/
+		
+		double x1,y1,x2,y2;
+		x1 = coords[0];
+		y1 = coords[1];
+		x2 = coords[2];
+		y2 = coords[3];
+	
+		double x3,y3,x4,y4;
+		x3 = coords[4];
+		y3 = coords[5];
+		x4 = coords[6];
+		y4 = coords[7];
+	
+		//Single line solution, from comments above
+		if (y2-y1 == 0 && y4-y3 == 0) return coords[2]/2 + coords[4]/2;
+		double x =  (        y3*(x2-x1)*(x4-x3) - y1*(x2-x1)*(x4-x3)  +  x1*(y2-y1)*(x4-x3)  -  x3*(y4-y3)*(x2-x1)      )   /  (  (y2-y1)*(x4-x3) - (y4-y3)*(x2-x1)   );
+		
+		System.out.println("Intercept: "+x);
+		
+		return x;
+	}//getIntersections
+	
+	
 	public void calcBounds(){
 		double min_x = Integer.MAX_VALUE;
 		double max_x = Integer.MIN_VALUE;
@@ -200,22 +267,27 @@ public class Track {
 		
 		Path[] paths = {left, right};
 		
-		for (Path path: paths)
+		for (Path path: paths){
 			for (int i=0; i<path.getFilled(); i++){
 				double x = path.getX(i);
 				double y = path.getY(i);
-				
-				if (x < min_x) min_x = x;
+
+				if (x < min_x) {
+					min_x = x;
+				}
 				else if (x > max_x) max_x = x;
 
 				if (y < min_y) min_y = y;
 				else if (y > max_y) max_y = y;
 			}
+		}
 
 		x = min_x;
 		y = min_y;
 		w = max_x-min_x;
 		h = max_y-min_y;
+		
+//		System.out.printf("X: %f,  Y: %f,  W: %f,  H: %f\n", x, y, w, h);
 		
 	}//calcBounds
 	

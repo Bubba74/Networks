@@ -161,7 +161,7 @@ public class Spotlight {
 	
 		//Draw Circle around where the spotlight car is
 		double tx = gridToScreen(car.getX(),  true), ty = gridToScreen(car.getY(), false);
-		double radius = 30;
+		double radius = Math.min(30,Main.maxDistance*Main.getView().sf);
 		double count = 20;
 		double da = 2*Math.PI/count;
 		glColor3f(1,1,1);

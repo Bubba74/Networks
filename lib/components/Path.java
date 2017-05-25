@@ -53,14 +53,14 @@ public class Path {
 	}//getSmallTrack
 	
 	public static Path getBigTrack (){
-		Path path = new Path (1+1+61+1+61);
+		Path path = new Path (1+1+61+1+60);
 
 		path.addPoint(0,0);
 		//Big Track Field
 		path.addLine(0, 1000);
 		path.addArc(Math.PI/32,32, 60);
 		path.addLine(Math.PI, 1000);
-		path.addArc(Math.PI/32,32, 60);
+		path.addArc(Math.PI/32,31, 60);
 		
 		return path;
 	}//getBigTrack
@@ -242,6 +242,8 @@ public class Path {
 		arr_y[index] = y;
 	}//setPoint
 	public double getX (int index){
+		if (index < 0) index += filled;
+		else if (index >= filled) index -= filled;
 		return arr_x[index];
 	}
 	public double lastX (){
@@ -249,6 +251,8 @@ public class Path {
 		return arr_x[filled-1];
 	}
 	public double getY (int index){
+		if (index < 0) index += filled;
+		else if (index >= filled) index -= filled;
 		return arr_y[index];
 	}
 	public double lastY(){
