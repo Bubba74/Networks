@@ -104,7 +104,7 @@ public class Main {
 			if (Keyboard.isKeyDown(Keyboard.KEY_UP)) car.accelerate(0.001);
 			if (Keyboard.isKeyDown(Keyboard.KEY_DOWN)) car.accelerate(-0.001);
 			if (Keyboard.isKeyDown(Keyboard.KEY_SPACE)) car.stop();
-			if (Keyboard.isKeyDown(Keyboard.KEY_R)) car.resetTo(path.getX(0), path.getY(0), 0);
+			if (Keyboard.isKeyDown(Keyboard.KEY_R)) car.resetTo(track.getStartX(), track.getStartY(), track.getStartA());
 		}
 		
 	}//poll	
