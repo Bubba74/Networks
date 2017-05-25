@@ -48,7 +48,8 @@ public class Main {
 		}
 		spotlight = new Spotlight(cars[19]);
 		
-		path = PathToDraw.convertPath(Path.importPath("Square_400"));
+//		path = PathToDraw.convertPath(Path.importPath("Square_400"));
+		path = PathToDraw.convertPath(Path.importPath("Complex1"));
 		
 		trackCamera = new View ();
 		view = new View();
@@ -74,7 +75,7 @@ public class Main {
 			dt = System.currentTimeMillis()-lastTime;
 			lastTime = System.currentTimeMillis();
 			
-			track.rotate(0.001);
+//			track.rotate(0.001);
 			updateTrackView();
 			
 			poll();
