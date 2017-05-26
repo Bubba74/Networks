@@ -85,6 +85,7 @@ public class Driver extends CarToDraw {
 		if (!aiControlled){
 			if (Main.controllerIn){
 				control = Main.xbox.getRXAxisValue();
+				
 			} else {
 				if (Keyboard.isKeyDown(Keyboard.KEY_LEFT))
 					control = -1;
