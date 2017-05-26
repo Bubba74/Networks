@@ -50,7 +50,7 @@ public class Car {
 			}
 		}
 		
-		if (count > 10) collision = true;
+		if (count > 3) collision = true;
 		
 		return collision;
 	}//didCollide

@@ -26,6 +26,7 @@ public class Driver extends CarToDraw {
 	private boolean aiControlled;
 	//Keycode which will flip between ai and human control.
 	private int controlKey;
+	private int ejectKey;//Ai control
 	//key pressed flag. Switch controls when (controlKey && !alreadySwitched)
 	private boolean alreadySwitched;
 	
@@ -43,6 +44,7 @@ public class Driver extends CarToDraw {
 		
 		aiControlled = true;
 		controlKey = -1;//Don't EVER switch
+		ejectKey = Keyboard.KEY_ESCAPE;
 		alreadySwitched = false;
 		
 		kP = 1;
@@ -55,11 +57,12 @@ public class Driver extends CarToDraw {
 		crashed = false;
 	}//Driver
 	
-	public Driver (int id, boolean aiControlled, int controlKey){
+	public Driver (int id, boolean aiControlled, int controlKey, int ejectKey){
 		this(id);
 		
 		this.aiControlled = aiControlled;
 		this.controlKey = controlKey;
+		this.ejectKey = ejectKey;
 		this.alreadySwitched = false;
 	}//Driver
 	
@@ -75,11 +78,21 @@ public class Driver extends CarToDraw {
 			alreadySwitched = false;
 		}
 		
-		if (aiControlled){
-			//Use output from PID controller
-			
-		} else {
-			control = Main.xbox.getRXAxisValue();
+		if (ejectKey > 0 && Keyboard.isKeyDown(ejectKey)){
+			aiControlled = true;
+		}
+		
+		if (!aiControlled){
+			if (Main.controllerIn){
+				control = Main.xbox.getRXAxisValue();
+			} else {
+				if (Keyboard.isKeyDown(Keyboard.KEY_LEFT))
+					control = -1;
+				else if (Keyboard.isKeyDown(Keyboard.KEY_RIGHT))
+					control = 1;
+				else
+					control = 0;
+			}
 		}
 		
 		inputs(control);

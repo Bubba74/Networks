@@ -3,6 +3,7 @@ package main;
 import static org.lwjgl.opengl.GL11.*;
 
 import java.awt.Color;
+import java.awt.Dimension;
 
 import org.lwjgl.LWJGLException;
 import org.lwjgl.input.Controller;
@@ -20,11 +21,15 @@ import drawing.View;
 
 public class Main {
 
+	public static boolean controllerIn;
 	public static Controller xbox;
 	
 	public static int maxDistance = 500;
-	public static final int WIDTH = 1800;
-	public static final int HEIGHT = 1000;
+	
+	public static final Dimension screen = (Dimension) java.awt.Toolkit.getDefaultToolkit().getScreenSize();
+//	public static final Dimension screen = new Dimension(1800, 1000);
+	public static final int WIDTH = (int) screen.getWidth()-10;
+	public static final int HEIGHT = (int) screen.getHeight()-100;
 
 	static double vel = 0.3, da = 0.02, rayScope = Math.PI/2;
 	static int rays = 160;
@@ -42,7 +47,6 @@ public class Main {
 		
 		cars = new Driver[20];
 		for (int i=0; i<20; i++){
-//			cars[i] = new Driver(1, true, (i==7?Keyboard.KEY_LSHIFT:-1));
 			cars[i] = new Driver(1);
 			cars[i].resetRays(rayScope, rays);
 			cars[i].setVelocities(vel*(i+1)/20.0, da);
@@ -53,9 +57,9 @@ public class Main {
 		spotlight = new Spotlight(cars[19]);
 		spotlight.setLocation(0, 0);
 //		path = PathToDraw.convertPath(Path.importPath("Square_400"));
-		path = PathToDraw.convertPath(Path.importPath("Complex2"));
+//		path = PathToDraw.convertPath(Path.importPath("Complex2"));
 //		path = PathToDraw.convertPath(Path.importPath("Blob"));
-//		path = PathToDraw.convertPath(Path.importPath("BigTrack"));
+		path = PathToDraw.convertPath(Path.importPath("BigTrack"));
 		
 		trackCamera = new View ();
 		view = new View();
@@ -72,32 +76,33 @@ public class Main {
 		
 		long lastTime = System.currentTimeMillis();
 		long dt;
+
 		
+		//Xbox Support
 		try {
 			Controllers.create();
 		} catch (LWJGLException e) {
 			e.printStackTrace();
 		}
-
-		for (int i=0; i<Controllers.getControllerCount(); i++){
-			System.out.println(Controllers.getController(i).getName());
-		}
-		xbox = Controllers.getController(0);
 		
+		controllerIn = false;
+		xbox = null;
+		checkForControllers();
+		/**/
+		
+				
 		while (!Display.isCloseRequested()){
 			Controllers.poll();
+//			if (controllerIn)
+//				checkForControllers();
 			
 			if (!Keyboard.isKeyDown(Keyboard.KEY_C)) glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 		
 			dt = System.currentTimeMillis()-lastTime;
 			lastTime = System.currentTimeMillis();
 			
-//			System.out.println();
-//			for (int i=0; i<Controllers.getControllerCount(); i++){
-//				System.out.printf("X: %f\n", Controllers.getController(i).getXAxisValue());
-//			}
-//			track.rotate(0.001);
-//			updateTrackView();
+			track.rotate(0.001);
+			updateTrackView();
 			
 			poll();
 			update(dt);
@@ -108,6 +113,7 @@ public class Main {
 		}
 		
 		Display.destroy();
+		Controllers.destroy();
 	
 	}//main
 	
@@ -124,6 +130,13 @@ public class Main {
 			if (Keyboard.isKeyDown(Keyboard.KEY_DOWN)) car.accelerate(-0.001);
 			if (Keyboard.isKeyDown(Keyboard.KEY_SPACE)) car.stop();
 			if (Keyboard.isKeyDown(Keyboard.KEY_R)) car.resetTo(track.getStartX(), track.getStartY(), track.getStartA());
+		}
+		
+		while (Keyboard.next()){
+			if (Keyboard.getEventKeyState() && Keyboard.getEventKey() == Keyboard.KEY_F3){
+				System.out.println("Rescan");
+				checkForControllers();
+			}
 		}
 		
 	}//poll	
@@ -211,6 +224,7 @@ public class Main {
 
 		try {
 			Display.setDisplayMode(new DisplayMode(WIDTH,HEIGHT));
+
 			Display.create();
 		} catch (LWJGLException e) {
 			e.printStackTrace();
@@ -225,5 +239,15 @@ public class Main {
 
 	}//initGL
 	
+	private static void checkForControllers(){
+		Controllers.poll();
+
+		if (Controllers.getControllerCount() > 0){
+			controllerIn = true;
+			xbox = Controllers.getController(0);
+		} else {
+			controllerIn = false;
+		}
+	}//checkForControllers
 
 }//Main
