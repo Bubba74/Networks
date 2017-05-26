@@ -31,15 +31,10 @@ public class Driver extends CarToDraw {
 	
 	private double kP, kI, kD;
 	private MiniPID pid;
-	private double analogControl;
+	private double control;
 	private int[] controlDisplay = {10, 10, 200, 100};
 	
-	private boolean drawPWM;
-	private AnalogToPWM pwm;
-	private int pwmControl;
-	
 	private boolean crashed;
-	
 
 	public Driver (int id){
 		super();
@@ -56,11 +51,6 @@ public class Driver extends CarToDraw {
 		pid = new MiniPID(kP, kI, kD);
 		pid.setOutputLimits(1);
 		pid.setSetpoint(0);
-		
-		drawPWM = false;
-		pwm = new AnalogToPWM(100);
-		pwmControl = 0;
-
 		
 		crashed = false;
 	}//Driver
@@ -85,24 +75,14 @@ public class Driver extends CarToDraw {
 			alreadySwitched = false;
 		}
 		
-		boolean left = false, right = false;
-		
 		if (aiControlled){
-			//Turn a -1 to 1 analog output signal from PID controller
-			//into essentially a pwm signal
-
-			pwmControl = pwm.getPWM(Math.abs(analogControl));
-			if (analogControl < 0) pwmControl *= -1;
-
-			if (pwmControl < 0.2) left = true;
-			else if (pwmControl > 0.2) right = true;
-
+			//Use output from PID controller
+			
 		} else {
-			left = Keyboard.isKeyDown(Keyboard.KEY_LEFT);
-			right = Keyboard.isKeyDown(Keyboard.KEY_RIGHT);
+			control = Main.xbox.getRXAxisValue();
 		}
 		
-		inputs(left, right);
+		inputs(control);
 		
 	}//poll
 	
@@ -142,33 +122,6 @@ public class Driver extends CarToDraw {
 	}//renderRays
 	
 	public void render (){
-		//BROKEN
-		if (drawPWM){
-			//PID Background
-//			glPushMatrix();
-//			glTranslatef(-100, -50, 0);
-			
-				glColor3f(1,1,1);
-				glBegin(GL_QUADS);
-					glVertex2f(10,10);
-					glVertex2f(210,10);
-					glVertex2f(210,110);
-					glVertex2f(10,110);
-				glEnd();
-				
-				//Draw PID output (-1 to 1) -> (10 --> 210) red quad
-				double pidx = 110+100*analogControl;
-				glColor3f(1,0,0);
-				glBegin(GL_QUADS);
-					glVertex2d(pidx-2, 10);
-					glVertex2d(pidx-2, 110);
-					glVertex2d(pidx+2, 110);
-					glVertex2d(pidx+2, 10);
-				glEnd();
-				
-//			glPopMatrix();
-		}
-		
 		//Draw the car and rays if so desired
 		super.render();
 		
@@ -194,9 +147,7 @@ public class Driver extends CarToDraw {
 		for (int i=len/2; i<len; i++)
 			offset -= dists[i];
 		
-		analogControl = pid.getOutput(offset/10000, 0);
-		
-		pwmControl = pwm.getPWM(analogControl);
+		control = pid.getOutput(offset/10000, 0);
 		
 	}//calculatePID
 	

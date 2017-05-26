@@ -5,6 +5,8 @@ import static org.lwjgl.opengl.GL11.*;
 import java.awt.Color;
 
 import org.lwjgl.LWJGLException;
+import org.lwjgl.input.Controller;
+import org.lwjgl.input.Controllers;
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.opengl.Display;
 import org.lwjgl.opengl.DisplayMode;
@@ -17,6 +19,8 @@ import drawing.TrackToDraw;
 import drawing.View;
 
 public class Main {
+
+	public static Controller xbox;
 	
 	public static int maxDistance = 500;
 	public static final int WIDTH = 1800;
@@ -47,7 +51,7 @@ public class Main {
 			cars[i].setPID(10, 0, 0);
 		}
 		spotlight = new Spotlight(cars[19]);
-		
+		spotlight.setLocation(0, 0);
 //		path = PathToDraw.convertPath(Path.importPath("Square_400"));
 		path = PathToDraw.convertPath(Path.importPath("Complex2"));
 //		path = PathToDraw.convertPath(Path.importPath("Blob"));
@@ -60,25 +64,40 @@ public class Main {
 
 		updateTrackView();
 		
-		
 		for (Driver car: cars){
 			car.resetTo(track.getStartX(), track.getStartY(), track.getStartA());
 		}
-		
+
 		spotlight.setLocation(WIDTH/2-100, HEIGHT/2-100);
 		
 		long lastTime = System.currentTimeMillis();
 		long dt;
 		
+		try {
+			Controllers.create();
+		} catch (LWJGLException e) {
+			e.printStackTrace();
+		}
+
+		for (int i=0; i<Controllers.getControllerCount(); i++){
+			System.out.println(Controllers.getController(i).getName());
+		}
+		xbox = Controllers.getController(0);
+		
 		while (!Display.isCloseRequested()){
+			Controllers.poll();
 			
 			if (!Keyboard.isKeyDown(Keyboard.KEY_C)) glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-			
+		
 			dt = System.currentTimeMillis()-lastTime;
 			lastTime = System.currentTimeMillis();
 			
-			track.rotate(0.001);
-			updateTrackView();
+//			System.out.println();
+//			for (int i=0; i<Controllers.getControllerCount(); i++){
+//				System.out.printf("X: %f\n", Controllers.getController(i).getXAxisValue());
+//			}
+//			track.rotate(0.001);
+//			updateTrackView();
 			
 			poll();
 			update(dt);
@@ -134,7 +153,7 @@ public class Main {
 		glScaled(view.sf, view.sf, 1);
 		glTranslated(view.x, view.y,0);
 		
-		track.fill(0, 0.2, 0);
+		track.fill();
 		track.render();
 
 		for (Driver car: cars){

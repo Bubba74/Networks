@@ -224,17 +224,13 @@ public class Track {
 			if (da1 > da2){
 				dx *= -1;
 				dy *= -1;
-				System.out.printf("i: %d, Dx1: %f,  Dy1: %f,  Dx2: %f,  Dy2: %f,    Dx3: %f,  Dy3: %f,  Dxr: %f,  Dy4: %f\n",
-						i, dx1, dy1, dx2, dy2, dx3, dy3, dx4, dy4);
-			}
-			else {
+//				System.out.printf("i: %d, Dx1: %f,  Dy1: %f,  Dx2: %f,  Dy2: %f,    Dx3: %f,  Dy3: %f,  Dxr: %f,  Dy4: %f\n",
+//						i, dx1, dy1, dx2, dy2, dx3, dy3, dx4, dy4);
 			}
 			
 			/*
 			 * An attempt to figure out if dx,dy should switch, based off of the
 			 */
-			
-			
 			
 			left.addPoint(this_x - dx, this_y - dy);
 			right.addPoint(this_x + dx, this_y + dy);

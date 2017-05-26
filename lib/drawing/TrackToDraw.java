@@ -31,7 +31,7 @@ public class TrackToDraw extends Track{
 		
 	}//render
 	
-	public void fill (double br, double bg, double bb){
+	public void fill (){
 		
 		Path left = getLeftSide();
 		Path right = getRightSide();

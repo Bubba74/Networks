@@ -4,11 +4,7 @@ import components.Track;
 
 public class Car {
 
-	public enum Control {
-		kLeft, kStraight, kRight
-	}
-	
-	private Control control;
+	private double control;
 
 	//(x,y) pair representing car's location
 	private double x,y;
@@ -31,17 +27,7 @@ public class Car {
 		x += Math.cos(z)*d;
 		y += Math.sin(z)*d;
 		
-		switch (control){
-		case kLeft:
-			z -= turnVel*dt/10;
-			break;
-		case kRight:
-			z += turnVel*dt/10;
-			break;
-		case kStraight:
-			//Don't turn
-			break;
-		}
+		z += control*turnVel*dt/10;
 		
 	}//update
 	
@@ -69,29 +55,15 @@ public class Car {
 		return collision;
 	}//didCollide
 
-	public void inputs (boolean left, boolean right){
-		int command = 0;//0 = straight
-		if (left && !right) command = -1;
-		if (!left && right) command = 1;
-
-		switch (command){
-		case -1:
-			control = Control.kLeft;
-			break;
-		case 1:
-			control = Control.kRight;
-			break;
-		default:
-			control = Control.kStraight;
-			break;
-		}
+	public void inputs (double controlValue){
+			control = controlValue;
 	}//inputs
 
 	//-----------Basic Methods------------//
 	
 	public Car (double x, double y, double z, double vel, double turningSpeed, double greatestRayAngle, int rayNum){
-		this.control = Control.kStraight;
-
+		this.control = 0;
+		
 		this.x = x;
 		this.y = y;
 		this.z = z;
@@ -106,7 +78,7 @@ public class Car {
 		this.rayDistances = new double[rayCount];
 	}//Complex Constructor
 	public Car (){
-		this.control = Control.kStraight;
+		this.control = 0;
 		
 		x = 0;
 		y = 0;
