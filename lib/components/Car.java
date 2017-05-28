@@ -115,7 +115,15 @@ public class Car {
 	public void stop(){
 		vel = 0.0;
 	}//stop
-
+	public void rotate(double angle, double cos, double sin){
+		z += angle;
+		
+		double new_x = x*cos+y*sin;
+		y = x*sin-y*cos;
+		x = new_x;
+		
+	}//rotate
+	
 	public int getRayNum(){
 		return rayCount;
 	}

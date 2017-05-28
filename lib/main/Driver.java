@@ -1,16 +1,6 @@
 package main;
 
-import static org.lwjgl.opengl.GL11.GL_POLYGON;
-import static org.lwjgl.opengl.GL11.GL_QUADS;
-import static org.lwjgl.opengl.GL11.glBegin;
-import static org.lwjgl.opengl.GL11.glColor3f;
-import static org.lwjgl.opengl.GL11.glEnd;
-import static org.lwjgl.opengl.GL11.glPopMatrix;
-import static org.lwjgl.opengl.GL11.glPushMatrix;
-import static org.lwjgl.opengl.GL11.glRotated;
-import static org.lwjgl.opengl.GL11.glTranslated;
-import static org.lwjgl.opengl.GL11.glVertex2d;
-import static org.lwjgl.opengl.GL11.glVertex2f;
+import static org.lwjgl.opengl.GL11.*;
 
 import org.lwjgl.input.Keyboard;
 
@@ -195,6 +185,10 @@ public class Driver extends CarToDraw {
 		crashed = false;
 	}//resetTo
 	
+	
+	public void rotate(double angle, double cos, double sin){
+		super.rotate(angle, cos, sin);
+	}//rotate
 	//------------------PID Controls------------------------//
 	public void setPID(double p, double i, double d){
 		kP = p;

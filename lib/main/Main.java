@@ -57,14 +57,14 @@ public class Main {
 		spotlight = new Spotlight(cars[19]);
 		spotlight.setLocation(0, 0);
 //		path = PathToDraw.convertPath(Path.importPath("Square_400"));
-//		path = PathToDraw.convertPath(Path.importPath("Complex2"));
+		path = PathToDraw.convertPath(Path.importPath("Testing"));
 //		path = PathToDraw.convertPath(Path.importPath("Blob"));
-		path = PathToDraw.convertPath(Path.importPath("BigTrack"));
+//		path = PathToDraw.convertPath(Path.importPath("BigTrack"));
 		
 		trackCamera = new View ();
 		view = new View();
 		
-		track = new TrackToDraw(path, 40, Color.red);
+		track = new TrackToDraw(path, 60, Color.red);
 
 		updateTrackView();
 		
@@ -101,6 +101,8 @@ public class Main {
 			dt = System.currentTimeMillis()-lastTime;
 			lastTime = System.currentTimeMillis();
 			
+//			double cos = Math.cos(0.001), sin = Math.sin(0.001);
+//			for (Driver car: cars) car.rotate(-0.001, cos, sin);
 			track.rotate(0.001);
 			updateTrackView();
 			
@@ -166,7 +168,9 @@ public class Main {
 		glScaled(view.sf, view.sf, 1);
 		glTranslated(view.x, view.y,0);
 		
-		track.fill();
+		if (!Keyboard.isKeyDown(Keyboard.KEY_C))
+			track.fill();
+		
 		track.render();
 
 		for (Driver car: cars){
@@ -236,6 +240,7 @@ public class Main {
 		glMatrixMode(GL_MODELVIEW);
 
 		glClearColor(0, 0.2f, 0, 0);
+//		glClearColor(0, 0, 0, 0);
 
 	}//initGL
 	

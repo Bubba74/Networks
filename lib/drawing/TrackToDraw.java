@@ -45,12 +45,6 @@ public class TrackToDraw extends Track{
 		
 		glEnd();
 		
-//		glColor3d(br,bg,bb);
-//		glBegin(GL_POLYGON);
-//		for (int i=0; i<right.getFilled(); i++)
-//			glVertex2d(right.getX(i), right.getY(i));
-//		glEnd();
-		
 	}//fill
 
 }//TrackToDraw
