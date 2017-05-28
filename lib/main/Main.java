@@ -93,16 +93,12 @@ public class Main {
 				
 		while (!Display.isCloseRequested()){
 			Controllers.poll();
-//			if (controllerIn)
-//				checkForControllers();
 			
 			if (!Keyboard.isKeyDown(Keyboard.KEY_C)) glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 		
 			dt = System.currentTimeMillis()-lastTime;
 			lastTime = System.currentTimeMillis();
 			
-//			double cos = Math.cos(0.001), sin = Math.sin(0.001);
-//			for (Driver car: cars) car.rotate(-0.001, cos, sin);
 			track.rotate(0.001);
 			updateTrackView();
 			
