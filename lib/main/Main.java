@@ -31,7 +31,7 @@ public class Main {
 	public static final int WIDTH = (int) screen.getWidth()-10;
 	public static final int HEIGHT = (int) screen.getHeight()-100;
 
-	static double vel = 0.3, da = 0.02, rayScope = Math.PI/2;
+	static double vel = 0.3, acc = 0.001, da = 0.02, rayScope = Math.PI/2;
 	static int rays = 160;
 
 	static Driver[] cars;
@@ -46,12 +46,13 @@ public class Main {
 		initGL();
 		
 		int num = 10;
+		double x = num;
 		cars = new Driver[num];
 		for (int i=0; i<num; i++){
 			cars[i] = new Driver(1);
 			cars[i].resetRays(rayScope, rays);
-			cars[i].setVelocities(vel*(i+1)/(double)num, da);
-			cars[i].setColor(1-i/(double)num, i/(double)num, 0);
+			cars[i].setVelocities((i+1)*vel/x, acc, da);
+			cars[i].setColor(1-i/x, i/x, 0);
 			cars[i].drawRays(false);
 			cars[i].setPID(10, 0, 0);
 		}
@@ -59,8 +60,8 @@ public class Main {
 		spotlight.setLocation(0, 0);
 //		path = PathToDraw.convertPath(Path.importPath("Square_400"));
 //		path = PathToDraw.convertPath(Path.importPath("Complex2"));
-//		path = PathToDraw.convertPath(Path.importPath("T"));
-		path = PathToDraw.convertPath(Path.importPath("BigTrack"));
+		path = PathToDraw.convertPath(Path.importPath("T"));
+//		path = PathToDraw.convertPath(Path.importPath("BigTrack"));
 		
 		trackCamera = new View ();
 		view = new View();
@@ -105,6 +106,7 @@ public class Main {
 			
 			poll();
 			update(dt);
+			System.out.println();
 			render();
 		
 			Display.update();
@@ -125,8 +127,8 @@ public class Main {
 		}
 		
 		for (Driver car: cars){
-			if (Keyboard.isKeyDown(Keyboard.KEY_UP)) car.accelerate(0.001);
-			if (Keyboard.isKeyDown(Keyboard.KEY_DOWN)) car.accelerate(-0.001);
+			if (Keyboard.isKeyDown(Keyboard.KEY_EQUALS)) car.accelerate(0.001);
+			if (Keyboard.isKeyDown(Keyboard.KEY_MINUS)) car.accelerate(-0.001);
 			if (Keyboard.isKeyDown(Keyboard.KEY_SPACE)) car.stop();
 			if (Keyboard.isKeyDown(Keyboard.KEY_R)) car.resetTo(track.getStartX(), track.getStartY(), track.getStartA());
 		}

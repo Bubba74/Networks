@@ -4,7 +4,8 @@ import components.Track;
 
 public class Car {
 
-	private double control;
+	private double controlSpeed;
+	private double controlTurn;
 
 	//(x,y) pair representing car's location
 	private double x,y;
@@ -12,7 +13,10 @@ public class Car {
 	private double z; //radians
 	
 	//Forward Velocity
+	private double startingVel;
 	private double vel;
+	private double acc;
+	
 	//delta angle for each loop
 	private double turnVel;
 	
@@ -22,12 +26,14 @@ public class Car {
 	private double[] rayDistances;
 	
 	public void update (int dt){
-		
+
 		double d = vel* dt;
 		x += Math.cos(z)*d;
 		y += Math.sin(z)*d;
 		
-		z += control*turnVel*dt/10;
+		vel += controlSpeed*acc*dt/10;
+		
+		z += controlTurn*turnVel*dt/10;
 		
 	}//update
 	
@@ -56,19 +62,36 @@ public class Car {
 	}//didCollide
 
 	public void inputs (double controlValue){
-			control = controlValue;
+		controlValue = limit(controlValue);
+		
+		controlTurn = controlValue;
+		controlSpeed = 0;
 	}//inputs
+	public void inputs (double turn, double speed){
+		turn = limit(turn);
+		speed = limit(speed);
+		controlTurn = turn;
+		controlSpeed = speed;
+	}//inputs
+	private double limit (double value){
+		//Limits value between -1 and 1
+		if (value < -1) return -1;
+		if (value > 1) return 1;
+		return value;
+	}//limit
 
 	//-----------Basic Methods------------//
 	
-	public Car (double x, double y, double z, double vel, double turningSpeed, double greatestRayAngle, int rayNum){
-		this.control = 0;
+	public Car (double x, double y, double z, double vel, double acc, double turningSpeed, double greatestRayAngle, int rayNum){
+		this.controlTurn = 0;
 		
 		this.x = x;
 		this.y = y;
 		this.z = z;
 
 		this.vel = vel;
+		startingVel = vel;
+		this.acc = acc;
 		this.turnVel = turningSpeed;
 		
 		rayCount = rayNum;
@@ -78,13 +101,15 @@ public class Car {
 		this.rayDistances = new double[rayCount];
 	}//Complex Constructor
 	public Car (){
-		this.control = 0;
+		this.controlTurn = 0;
 		
 		x = 0;
 		y = 0;
 		z = 0;
 		
 		vel = 0;
+		startingVel = 0;
+		acc = 0;
 		turnVel = 0;
 		
 		rayCount = 0;
@@ -104,9 +129,21 @@ public class Car {
 	public double getVel (){
 		return vel;
 	}
+	public double getCurAcc (){
+		return controlSpeed*acc;
+	}
+	public double getMaxAcc (){
+		return acc;
+	}
+	public void setMaxAcceleration (double acceleration){
+		acc = acceleration;
+	}
 	
-	public void setVelocities (double forward, double turn){
-		vel = forward;
+	public void setVelocities (double forwardVelocity, double forwardAcceleration, double turn){
+		vel = forwardVelocity;
+		startingVel = vel;
+		acc = forwardAcceleration;
+		
 		turnVel = turn;
 	}//setVelocities
 	public void accelerate(double acc){
@@ -151,6 +188,8 @@ public class Car {
 		this.x = x;
 		this.y = y;
 		this.z = z;
+		
+		vel = startingVel;
 	}//resetTo
 	public void resetTo (double kX, double kY, double kZ, double kVel, double kTurnVel){
 		x = kX;

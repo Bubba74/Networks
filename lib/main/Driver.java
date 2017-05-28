@@ -31,7 +31,6 @@ public class Driver extends CarToDraw {
 		super();
 		
 		this.id = id;
-		
 		aiControlled = true;
 		controlKey = -1;//Don't EVER switch
 		ejectKey = Keyboard.KEY_ESCAPE;
@@ -71,11 +70,12 @@ public class Driver extends CarToDraw {
 		if (ejectKey > 0 && Keyboard.isKeyDown(ejectKey)){
 			aiControlled = true;
 		}
+		double speedControl = 0;
 		
 		if (!aiControlled){
 			if (Main.controllerIn){
 				control = Main.xbox.getRXAxisValue();
-				
+				speedControl = 1-Main.xbox.getRYAxisValue();
 			} else {
 				if (Keyboard.isKeyDown(Keyboard.KEY_LEFT))
 					control = -1;
@@ -83,10 +83,22 @@ public class Driver extends CarToDraw {
 					control = 1;
 				else
 					control = 0;
+				
+				if (Keyboard.isKeyDown(Keyboard.KEY_UP))
+					speedControl = 1;
+				else if (Keyboard.isKeyDown(Keyboard.KEY_DOWN))
+					speedControl = -1;
+				else
+					speedControl = 0;
+				
 			}
+		} else {
+			speedControl = 1-2*Math.abs(control);
+			speedControl = speedControl*Math.abs(speedControl);
 		}
 		
-		inputs(control);
+		if (getVel() <= 0.1) speedControl = 0;
+		inputs(control, speedControl);
 		
 	}//poll
 	
