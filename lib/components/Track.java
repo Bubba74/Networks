@@ -1,7 +1,5 @@
 package components;
 
-import java.awt.geom.Line2D;
-
 import main.Main;
 
 public class Track {
@@ -204,10 +202,10 @@ public class Track {
 			
 			 */
 
-			double dx1 = (this_x-dx - left.lastX()),  dy1 = (this_y-dy  - left.lastY());
-			double dx2 = (this_x+dx - right.lastX()),  dy2 = (this_y+dy  - right.lastY());
-			double dx3 = (this_x+dx - left.lastX()),  dy3 = (this_y+dy  - left.lastY());
-			double dx4 = (this_x-dx - right.lastX()),  dy4 = (this_y-dy  - right.lastY());
+			double dx1 = (this_x+dx - left.lastX()),  dy1 = (this_y+dy  - left.lastY());
+			double dx2 = (this_x-dx - right.lastX()),  dy2 = (this_y-dy  - right.lastY());
+			double dx3 = (this_x-dx - left.lastX()),  dy3 = (this_y-dy  - left.lastY());
+			double dx4 = (this_x+dx - right.lastX()),  dy4 = (this_y+dy  - right.lastY());
 			
 //			if (Math.abs(Math.atan2(dy1,dx1)-Math.atan2(dy2, dx2)) > Math.abs(Math.atan2(dy3,dx3) - Math.atan2(dy4,dx4)) ){
 
@@ -221,11 +219,11 @@ public class Track {
 			if (da2 >= Math.PI) da2 -= 2*Math.PI;
 			da2 = Math.abs(da2);
 			
-			if (da1 > da2){
+			if (da1 <= da2){
 				dx *= -1;
 				dy *= -1;
-//				System.out.printf("i: %d, Dx1: %f,  Dy1: %f,  Dx2: %f,  Dy2: %f,    Dx3: %f,  Dy3: %f,  Dxr: %f,  Dy4: %f\n",
-//						i, dx1, dy1, dx2, dy2, dx3, dy3, dx4, dy4);
+				System.out.printf("i: %d, Dx1: %f,  Dy1: %f,  Dx2: %f,  Dy2: %f,    Dx3: %f,  Dy3: %f,  Dxr: %f,  Dy4: %f\n",
+						i, dx1, dy1, dx2, dy2, dx3, dy3, dx4, dy4);
 			}
 			
 			/*
