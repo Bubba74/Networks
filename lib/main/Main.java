@@ -99,8 +99,8 @@ public class Main {
 			dt = System.currentTimeMillis()-lastTime;
 			lastTime = System.currentTimeMillis();
 			
-			track.rotate(0.001);
-			updateTrackView();
+//			track.rotate(0.001);
+//			updateTrackView();
 			
 			poll();
 			update(dt);
