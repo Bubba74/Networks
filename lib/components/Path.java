@@ -242,6 +242,8 @@ public class Path {
 		arr_y[index] = y;
 	}//setPoint
 	public double getX (int index){
+		if (index < 0) index += filled;
+		if (index >= filled) index -= filled;
 		return arr_x[index];
 	}
 	public double lastX (){
@@ -249,6 +251,8 @@ public class Path {
 		return arr_x[filled-1];
 	}
 	public double getY (int index){
+		if (index < 0) index += filled;
+		if (index >= filled) index -= filled;
 		return arr_y[index];
 	}
 	public double lastY(){

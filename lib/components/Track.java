@@ -167,7 +167,7 @@ public class Track {
 			double default_lx = this_x - dx;
 			double default_ly = this_y - dy;
 			
-			if (newLeftPointIntersectsCenterPath(default_lx, default_ly)){
+			if (newLeftPointIntersectsCenterPath(i, default_lx, default_ly)){
 				
 				dx *= -1;
 				dy *= -1;
@@ -192,11 +192,11 @@ public class Track {
 		
 	}//Track
 	
-	private boolean newLeftPointIntersectsCenterPath (double x2, double y2){
+	private boolean newLeftPointIntersectsCenterPath (int index, double x2, double y2){
 		double x1 = left.lastX();
 		double y1 = left.lastY();
 		
-		for (int i=0; i<center.getFilled(); i++){
+		for (int i=index; i<index+4; i++){
 			double x3 = center.getX(i-1), y3 = center.getY(i-1);
 			double x4 = center.getX(i), y4 = center.getY(i);
 			if (Line2D.linesIntersect(x1, y1, x2, y2, x3, y3, x4, y4)){

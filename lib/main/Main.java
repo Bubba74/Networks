@@ -45,21 +45,22 @@ public class Main {
 	public static void main(String[] args) {
 		initGL();
 		
-		cars = new Driver[20];
-		for (int i=0; i<20; i++){
+		int num = 10;
+		cars = new Driver[num];
+		for (int i=0; i<num; i++){
 			cars[i] = new Driver(1);
 			cars[i].resetRays(rayScope, rays);
-			cars[i].setVelocities(vel*(i+1)/20.0, da);
-			cars[i].setColor(1-i/20.0, i/20.0, 0);
+			cars[i].setVelocities(vel*(i+1)/(double)num, da);
+			cars[i].setColor(1-i/(double)num, i/(double)num, 0);
 			cars[i].drawRays(false);
 			cars[i].setPID(10, 0, 0);
 		}
-		spotlight = new Spotlight(cars[19]);
+		spotlight = new Spotlight(cars[num-1]);
 		spotlight.setLocation(0, 0);
 //		path = PathToDraw.convertPath(Path.importPath("Square_400"));
-//		path = PathToDraw.convertPath(Path.importPath("Complex1"));
-		path = PathToDraw.convertPath(Path.importPath("Wonky"));
-//		path = PathToDraw.convertPath(Path.importPath("BigTrack"));
+//		path = PathToDraw.convertPath(Path.importPath("Complex2"));
+//		path = PathToDraw.convertPath(Path.importPath("T"));
+		path = PathToDraw.convertPath(Path.importPath("BigTrack"));
 		
 		trackCamera = new View ();
 		view = new View();
@@ -176,8 +177,8 @@ public class Main {
 			car.renderCar();
 		}
 		
-//		glColor3f(1,1,1);
-//		path.render();
+		glColor3f(1,1,1);
+		path.render();
 		
 		glPopMatrix();
 		spotlight.render();
