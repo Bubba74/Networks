@@ -24,10 +24,10 @@ public class CarToDraw extends Car {
 	private double[] color;
 	
 	public CarToDraw (double x, double y, double z
-		, double vel, double turningSpeed
+		, double vel, double acc, double turningSpeed
 		, double greatestRayAngle, int rayCount){
 
-		super (x, y, z, vel, turningSpeed, greatestRayAngle, rayCount);
+		super (x, y, z, vel, acc, turningSpeed, greatestRayAngle, rayCount);
 		
 		drawCar = true;
 		drawRays = true;

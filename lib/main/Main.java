@@ -74,8 +74,6 @@ public class Main {
 			car.resetTo(track.getStartX(), track.getStartY(), track.getStartA());
 		}
 
-		spotlight.setLocation(WIDTH/2-100, HEIGHT/2-100);
-		
 		long lastTime = System.currentTimeMillis();
 		long dt;
 
@@ -94,19 +92,15 @@ public class Main {
 		
 				
 		while (!Display.isCloseRequested()){
-			Controllers.poll();
+			if (controllerIn) Controllers.poll();
 			
 			if (!Keyboard.isKeyDown(Keyboard.KEY_C)) glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 		
 			dt = System.currentTimeMillis()-lastTime;
 			lastTime = System.currentTimeMillis();
 			
-//			track.rotate(0.001);
-//			updateTrackView();
-			
 			poll();
 			update(dt);
-			System.out.println();
 			render();
 		
 			Display.update();
@@ -179,8 +173,8 @@ public class Main {
 			car.renderCar();
 		}
 		
-		glColor3f(1,1,1);
-		path.render();
+//		glColor3f(1,1,1);
+//		path.render();
 		
 		glPopMatrix();
 		spotlight.render();
@@ -239,7 +233,6 @@ public class Main {
 		glMatrixMode(GL_MODELVIEW);
 
 		glClearColor(0, 0.2f, 0, 0);
-//		glClearColor(0, 0, 0, 0);
 
 	}//initGL
 	

@@ -49,6 +49,7 @@ public class Spotlight {
 			if (dragView){
 				box[0] += Mouse.getEventDX();
 				box[1] -= Mouse.getEventDY();
+//				System.out.println(box[0]);
 			}
 			//Check Button 0
 			if (Mouse.getEventButton() == 0){

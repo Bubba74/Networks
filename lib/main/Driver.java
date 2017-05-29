@@ -98,6 +98,7 @@ public class Driver extends CarToDraw {
 		}
 		
 		if (getVel() <= 0.1) speedControl = 0;
+		speedControl = 0;
 		inputs(control, speedControl);
 		
 	}//poll
