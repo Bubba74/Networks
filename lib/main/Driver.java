@@ -12,12 +12,12 @@ public class Driver extends CarToDraw {
 	
 	private int id;
 	
-	//Is the car controlled by the PID loop? Or by a human?
+		//Is the car controlled by the PID loop? Or by a human?
 	private boolean aiControlled;
-	//Keycode which will flip between ai and human control.
+		//Keycode which will flip between ai and human control.
 	private int controlKey;
 	private int ejectKey;//Ai control
-	//key pressed flag. Switch controls when (controlKey && !alreadySwitched)
+		//key pressed flag. Switch controls when (controlKey && !alreadySwitched)
 	private boolean alreadySwitched;
 	
 	private double kP, kI, kD;
