@@ -156,6 +156,7 @@ public class Spotlight {
 		ghost.resetTo(180, 80, car.getZ());
 		double[] color = car.getColor();
 		ghost.setColor(color[0], color[1], color[2]);
+		ghost.setLapsCompleted(car.getLapsCompleted());
 		ghost.renderCar();
 		
 		glPopMatrix();

@@ -189,7 +189,7 @@ public class Car {
 		this.y = y;
 		this.z = z;
 		
-		vel = startingVel;
+//		vel = startingVel;
 	}//resetTo
 	public void resetTo (double kX, double kY, double kZ, double kVel, double kTurnVel){
 		x = kX;
