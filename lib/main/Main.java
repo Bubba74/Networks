@@ -27,11 +27,11 @@ public class Main {
 	public static int maxDistance = 500;
 	
 	public static final Dimension screen = (Dimension) java.awt.Toolkit.getDefaultToolkit().getScreenSize();
-//	public static final Dimension screen = new Dimension(1800, 1000);
+//	public static final Dimension screen = new Dimension(800, 500);
 	public static final int WIDTH = (int) screen.getWidth()-10;
 	public static final int HEIGHT = (int) screen.getHeight()-100;
 
-	static double vel = 0.3, acc = 0.001, da = 0.02, rayScope = Math.PI/2;
+	static double vel = 0.5, acc = 0.001, da = 0.02, rayScope = Math.PI/2;
 	static int rays = 160;
 
 	static Driver[] cars;
@@ -45,7 +45,7 @@ public class Main {
 	public static void main(String[] args) {
 		initGL();
 		
-		int num = 10;
+		int num = 20;
 		double x = num;
 		cars = new Driver[num];
 		for (int i=0; i<num; i++){
@@ -56,12 +56,19 @@ public class Main {
 			cars[i].drawRays(false);
 			cars[i].setPID(10, 0, 0);
 		}
+		
 		spotlight = new Spotlight(cars[num-1]);
 		spotlight.setLocation(0, 0);
 //		path = PathToDraw.convertPath(Path.importPath("Square_400"));
+<<<<<<< HEAD
 		path = PathToDraw.convertPath(Path.importPath("Complex1"));
+=======
+		path = PathToDraw.convertPath(Path.importPath("Complex2"));
+>>>>>>> LapCounter
 //		path = PathToDraw.convertPath(Path.importPath("T"));
 //		path = PathToDraw.convertPath(Path.importPath("BigTrack"));
+//		path = PathToDraw.convertPath(Path.importPath("Rectangle"));
+		
 		
 		trackCamera = new View ();
 		view = new View();
@@ -124,7 +131,10 @@ public class Main {
 			if (Keyboard.isKeyDown(Keyboard.KEY_EQUALS)) car.accelerate(0.001);
 			if (Keyboard.isKeyDown(Keyboard.KEY_MINUS)) car.accelerate(-0.001);
 			if (Keyboard.isKeyDown(Keyboard.KEY_SPACE)) car.stop();
-			if (Keyboard.isKeyDown(Keyboard.KEY_R)) car.resetTo(track.getStartX(), track.getStartY(), track.getStartA());
+			if (Keyboard.isKeyDown(Keyboard.KEY_R)) {
+				car.resetTo(track.getStartX(), track.getStartY(), track.getStartA());
+				car.setLapsCompleted(0);
+			}
 		}
 		
 		while (Keyboard.next()){
