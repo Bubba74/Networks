@@ -250,7 +250,7 @@ public class Driver extends CarToDraw {
 	public void setLapsCompleted (int override){
 		counter.setLapsCompleted(override);
 	}
-	
+
 	
 	public void rotate(double angle, double cos, double sin){
 		super.rotate(angle, cos, sin);

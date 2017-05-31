@@ -183,6 +183,12 @@ public class Car {
 		for (int i=0; i<rayCount; i++)
 			rayAngles[i] = -greatestAngle+i*(2*greatestAngle/(rayCount-1));
 	}//fillAngles
+	public double getControlTurn (){
+		return controlTurn;
+	}//getControlTurn
+	public double getControlSpeed (){
+		return controlSpeed;
+	}//getControlSpeed
 	
 	public void resetTo (double x, double y, double z){
 		this.x = x;
