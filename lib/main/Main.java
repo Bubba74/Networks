@@ -60,11 +60,7 @@ public class Main {
 		spotlight = new Spotlight(cars[num-1]);
 		spotlight.setLocation(0, 0);
 //		path = PathToDraw.convertPath(Path.importPath("Square_400"));
-<<<<<<< HEAD
-		path = PathToDraw.convertPath(Path.importPath("Complex1"));
-=======
 		path = PathToDraw.convertPath(Path.importPath("Complex2"));
->>>>>>> LapCounter
 //		path = PathToDraw.convertPath(Path.importPath("T"));
 //		path = PathToDraw.convertPath(Path.importPath("BigTrack"));
 //		path = PathToDraw.convertPath(Path.importPath("Rectangle"));
