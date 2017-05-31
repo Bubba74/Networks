@@ -31,7 +31,7 @@ public class Main {
 	public static final int WIDTH = (int) screen.getWidth()-10;
 	public static final int HEIGHT = (int) screen.getHeight()-100;
 
-	static double vel = 0.5, acc = 0.001, da = 0.02, rayScope = Math.PI/2;
+	static double vel = 0.7, acc = 0.001, da = 0.02, rayScope = Math.PI/2;
 	static int rays = 160;
 
 	static Driver[] cars;
@@ -60,9 +60,9 @@ public class Main {
 		spotlight = new Spotlight(cars[num-1]);
 		spotlight.setLocation(0, 0);
 //		path = PathToDraw.convertPath(Path.importPath("Square_400"));
-		path = PathToDraw.convertPath(Path.importPath("Complex2"));
+//		path = PathToDraw.convertPath(Path.importPath("Complex2"));
 //		path = PathToDraw.convertPath(Path.importPath("T"));
-//		path = PathToDraw.convertPath(Path.importPath("BigTrack"));
+		path = PathToDraw.convertPath(Path.importPath("BigTrack"));
 //		path = PathToDraw.convertPath(Path.importPath("Rectangle"));
 		
 		
