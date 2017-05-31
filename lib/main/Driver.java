@@ -1,6 +1,7 @@
 package main;
 
 import static org.lwjgl.opengl.GL11.*;
+import javafx.scene.paint.Color;
 
 import org.lwjgl.input.Keyboard;
 
@@ -9,15 +10,17 @@ import components.Track;
 import drawing.CarToDraw;
 
 public class Driver extends CarToDraw {
-	
+
+	public static Color[] lapColors = {Color.DARKGREY, Color.RED, Color.ORANGE, Color.YELLOW, Color.GREEN, Color.CYAN, Color.BLUE, Color.MAGENTA, Color.LIGHTGRAY, Color.WHITE};
+
 	private int id;
 	
-	//Is the car controlled by the PID loop? Or by a human?
+		//Is the car controlled by the PID loop? Or by a human?
 	private boolean aiControlled;
-	//Keycode which will flip between ai and human control.
+		//Keycode which will flip between ai and human control.
 	private int controlKey;
 	private int ejectKey;//Ai control
-	//key pressed flag. Switch controls when (controlKey && !alreadySwitched)
+		//key pressed flag. Switch controls when (controlKey && !alreadySwitched)
 	private boolean alreadySwitched;
 	
 	private double kP, kI, kD;
@@ -25,6 +28,7 @@ public class Driver extends CarToDraw {
 	private double control;
 	private int[] controlDisplay = {10, 10, 200, 100};
 	
+	private LapCounter counter;
 	private boolean crashed;
 
 	public Driver (int id){
@@ -42,7 +46,8 @@ public class Driver extends CarToDraw {
 		pid = new MiniPID(kP, kI, kD);
 		pid.setOutputLimits(1);
 		pid.setSetpoint(0);
-		
+
+		counter = new LapCounter();
 		crashed = false;
 	}//Driver
 	
@@ -77,16 +82,16 @@ public class Driver extends CarToDraw {
 				control = Main.xbox.getRXAxisValue();
 				speedControl = 1-Main.xbox.getRYAxisValue();
 			} else {
-				if (Keyboard.isKeyDown(Keyboard.KEY_LEFT))
+				if (Keyboard.isKeyDown(Keyboard.KEY_LEFT) || Keyboard.isKeyDown(Keyboard.KEY_A))
 					control = -1;
-				else if (Keyboard.isKeyDown(Keyboard.KEY_RIGHT))
+				else if (Keyboard.isKeyDown(Keyboard.KEY_RIGHT) || Keyboard.isKeyDown(Keyboard.KEY_D))
 					control = 1;
 				else
 					control = 0;
 				
-				if (Keyboard.isKeyDown(Keyboard.KEY_UP))
+				if (Keyboard.isKeyDown(Keyboard.KEY_UP) || Keyboard.isKeyDown(Keyboard.KEY_W))
 					speedControl = 1;
-				else if (Keyboard.isKeyDown(Keyboard.KEY_DOWN))
+				else if (Keyboard.isKeyDown(Keyboard.KEY_DOWN) || Keyboard.isKeyDown(Keyboard.KEY_S))
 					speedControl = -1;
 				else
 					speedControl = 0;
@@ -107,6 +112,9 @@ public class Driver extends CarToDraw {
 		super.update(dt);
 		
 		calcRays(track);
+		
+		if (!counter.isReady()) counter.setPath(track.getCenterPath());
+		counter.update(getX(), getY());
 		
 		if (didCollide(5)){
 			crashed = true;
@@ -133,6 +141,44 @@ public class Driver extends CarToDraw {
 			glPopMatrix();
 		}
 		super.renderCar();
+		
+		//Visual to display laps completed
+		int laps = counter.getLapsCompleted();
+		int tens = laps/10;
+		int ones = laps%10;
+		Color[] rings = {lapColors[tens], lapColors[ones]};
+		
+		glPushMatrix();
+		glTranslated(getX(), getY(), 0);
+		
+		int y = -24;
+		int width = 40;
+		
+//		glColor3d(0.1, 0.1, 0.1);
+//		glBegin(GL_QUADS);
+//			glVertex2f(-width/2, y);
+//			glVertex2f( width/2, y);
+//			glVertex2f( width/2, y+10);
+//			glVertex2f(-width/2, y+10);
+//		glEnd();
+			
+		for (int i=0; i<rings.length; i++){
+			//Set the rings color
+			glColor3d(rings[i].getRed(), rings[i].getGreen(), rings[i].getBlue());
+
+			glBegin(GL_QUADS);
+				glVertex2f(-width/2, y);
+				glVertex2f( width/2, y);
+				glVertex2f( width/2, y+8);
+				glVertex2f(-width/2, y+8);
+			glEnd();
+			
+			y += 9;
+		}
+		
+		glPopMatrix();
+	
+		
 	}//renderCar
 	public void renderRays (){
 		super.renderRays();
@@ -197,6 +243,13 @@ public class Driver extends CarToDraw {
 		super.resetTo (newX, newY, newZ);
 		crashed = false;
 	}//resetTo
+	
+	public int getLapsCompleted (){
+		return counter.getLapsCompleted();
+	}
+	public void setLapsCompleted (int override){
+		counter.setLapsCompleted(override);
+	}
 	
 	
 	public void rotate(double angle, double cos, double sin){
