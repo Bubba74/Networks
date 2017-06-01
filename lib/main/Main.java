@@ -1,18 +1,6 @@
 package main;
 
-import static org.lwjgl.opengl.GL11.GL_COLOR_BUFFER_BIT;
-import static org.lwjgl.opengl.GL11.GL_DEPTH_BUFFER_BIT;
-import static org.lwjgl.opengl.GL11.GL_MODELVIEW;
-import static org.lwjgl.opengl.GL11.GL_PROJECTION;
-import static org.lwjgl.opengl.GL11.glClear;
-import static org.lwjgl.opengl.GL11.glClearColor;
-import static org.lwjgl.opengl.GL11.glLoadIdentity;
-import static org.lwjgl.opengl.GL11.glMatrixMode;
-import static org.lwjgl.opengl.GL11.glOrtho;
-import static org.lwjgl.opengl.GL11.glPopMatrix;
-import static org.lwjgl.opengl.GL11.glPushMatrix;
-import static org.lwjgl.opengl.GL11.glScaled;
-import static org.lwjgl.opengl.GL11.glTranslated;
+import static org.lwjgl.opengl.GL11.*;
 
 import java.awt.Color;
 import java.awt.Dimension;
@@ -43,12 +31,13 @@ public class Main {
 	
 	public static int maxDistance = 500;
 	
-//	public static final Dimension screen = (Dimension) java.awt.Toolkit.getDefaultToolkit().getScreenSize();
-	public static final Dimension screen = new Dimension(800, 500);
+	public static final Dimension screen = (Dimension) java.awt.Toolkit.getDefaultToolkit().getScreenSize();
+//	public static final Dimension screen = new Dimension(800, 500);
+	
 	public static final int WIDTH = (int) screen.getWidth()-10;
 	public static final int HEIGHT = (int) screen.getHeight()-100;
 
-	static double vel = 0.7, acc = 0.001, da = 0.02, rayScope = Math.PI/2;
+	static double vel = 0.5, acc = 0.001, da = 0.02, rayScope = Math.PI/2;
 	static int rays = 160;
 
 	static Driver[] cars;
@@ -62,7 +51,7 @@ public class Main {
 	
 	public static void main(String[] args) {
 		
-		int num = 20;
+		int num = 10;
 		double x = num;
 		cars = new Driver[num];
 		for (int i=0; i<num; i++){
@@ -104,7 +93,7 @@ public class Main {
 			client.setReuseAddress(true);
 			System.out.println("Connected to client at"+client.getRemoteSocketAddress());
 			
-			remoteCar = new DriverServer(client, cars[0], rayScope, rays);
+			remoteCar = new DriverServer(client, cars[4], rayScope, rays);
 			remoteCar.start();
 			server.close();
 			
@@ -143,7 +132,7 @@ public class Main {
 			render();
 		
 			Display.update();
-			Display.sync(25);
+			Display.sync(20);
 		}
 		
 		Display.destroy();
@@ -159,8 +148,6 @@ public class Main {
 			if (remoteCar != null){
 				if (car != remoteCar.getDriver())
 					car.poll();
-				else
-					System.out.printf("Remote Controls: turn %.3f   speed %.3f\n",car.getControlTurn(), car.getControlSpeed());
 			} else
 				car.poll();
 		}

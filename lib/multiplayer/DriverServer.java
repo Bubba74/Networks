@@ -22,6 +22,8 @@ public class DriverServer extends Thread {
 
 	private double turnControl, speedControl;
 	private boolean first;
+	
+	private long start;//time
 
 
 	private String getLine (){
@@ -31,13 +33,12 @@ public class DriverServer extends Thread {
 		} catch (IOException e){
 			e.printStackTrace();
 		}
-		System.out.println(ret);
 		return ret;
 	}//getLine
 
 	public void run () {
+		start = System.nanoTime();
 		while (true){
-			System.out.println("Run loop");
 			if (first){
 				first = false;
 				System.out.println("First");
@@ -53,8 +54,13 @@ public class DriverServer extends Thread {
 			sendRayDepths();
 	
 			out.println("Controls");
+			out.flush();
 	
 			if (getLine().equals("Controls")){
+				long now = System.nanoTime();
+				System.out.println("New inputs: "+(now-start));
+				start = now;
+				
 				turnControl = Double.parseDouble(getLine());
 				speedControl = Double.parseDouble(getLine());
 				driver.inputs(turnControl, speedControl);
@@ -65,7 +71,7 @@ public class DriverServer extends Thread {
 	public DriverServer (Socket clientConnection, Driver localCar, double scope, int count) throws IOException{
 
 		remote = clientConnection;
-		out = new PrintWriter (remote.getOutputStream(),true);
+		out = new PrintWriter (remote.getOutputStream());
 		in = new BufferedReader (
 				new InputStreamReader (remote.getInputStream()));
 

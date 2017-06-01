@@ -16,7 +16,6 @@ public class DriverClient extends Thread {
 	private BufferedReader in;
 
 	private double turnControl, speedControl;
-	private double start;
 	
 	private double rayScope;
 	private int rayCount;
@@ -29,33 +28,31 @@ public class DriverClient extends Thread {
 		} catch (IOException e){
 			e.printStackTrace();
 		}
-		System.out.println(ret);
 		return ret;
 	}//getLine
 			
 	public void run(){
 		while (true){
-			System.out.println("Run");
 			String command = getLine();
 	
 			if (command.equals("RayScope")){
 				rayScope = Double.parseDouble(getLine());
+				
 			} else if (command.equals("RayCount")){
 				rayCount = Integer.parseInt(getLine());
+				
 			} else if (command.equals("RayDepths")){
 				if (rayDepths.length != rayCount) rayDepths = new double[rayCount];
-				long start = System.currentTimeMillis();
+				long start = System.nanoTime();
 				for (int i=0; i<rayCount; i++)
 					rayDepths[i] = Double.parseDouble(getLine());
-				System.out.printf("Reading %d rays took %d milliseconds.\n",rayCount,System.currentTimeMillis()-start);
+				System.out.printf("Reading %d rays took %d nanoseconds.\n",rayCount,System.nanoTime()-start);
+				
 			} else if (command.equals("Controls")){
-				turnControl = start;
-				speedControl = 1-start;
-				start += 0.001;
-				System.out.printf("Sending controls: Turn( %.3f )   Speed( %.3f )\n", turnControl, speedControl);
 				out.println("Controls");
 				out.println(""+turnControl);
 				out.println(""+speedControl);
+				out.flush();
 			}
 		}
 	}//run
@@ -64,7 +61,7 @@ public class DriverClient extends Thread {
 
 		socket = connectionToServer;
 
-		out = new PrintWriter (socket.getOutputStream(), true);
+		out = new PrintWriter (socket.getOutputStream());
 		in = new BufferedReader (
 				new InputStreamReader (socket.getInputStream()));
 
@@ -72,12 +69,14 @@ public class DriverClient extends Thread {
 		speedControl = 0;
 
 		rayScope = Math.PI/2;
-		rayCount = 160;
-		rayDepths = new double[160];
-
-		start = 0;
+		rayCount = 16;
+		rayDepths = new double[rayCount];
 
 	}//Constructor
+
+	public DriverClient (String address, int port) throws IOException {
+		this (new Socket(address, port));
+	}//DriverClient
 
 	public void inputs (double turn, double speed){
 		turnControl = turn;
