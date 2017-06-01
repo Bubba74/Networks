@@ -31,7 +31,7 @@ public class Main {
 	public static final int WIDTH = (int) screen.getWidth()-10;
 	public static final int HEIGHT = (int) screen.getHeight()-100;
 
-	static double vel = 0.7, acc = 0.001, da = 0.02, rayScope = Math.PI/2;
+	static double vel = 0.4, acc = 0.001, da = 0.02, rayScope = Math.PI/2;
 	static int rays = 160;
 
 	static Driver[] cars;
@@ -53,7 +53,7 @@ public class Main {
 			cars[i].resetRays(rayScope, rays);
 			cars[i].setVelocities((i+1)*vel/x, acc, da);
 			cars[i].setColor(1-i/x, i/x, 0);
-			cars[i].drawRays(false);
+			cars[i].drawRays(true);
 			cars[i].setPID(10, 0, 0);
 		}
 		
