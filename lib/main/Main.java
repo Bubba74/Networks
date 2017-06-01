@@ -38,7 +38,7 @@ public class Main {
 	public static final int HEIGHT = (int) screen.getHeight()-100;
 
 	static double vel = 0.5, acc = 0.001, da = 0.02, rayScope = Math.PI/2;
-	static int rays = 160;
+	static int rays = 32;
 
 	static Driver[] cars;
 	static DriverServer remoteCar = null;
