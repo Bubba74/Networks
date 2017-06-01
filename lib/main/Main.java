@@ -53,23 +53,22 @@ public class Main {
 			cars[i].resetRays(rayScope, rays);
 			cars[i].setVelocities((i+1)*vel/x, acc, da);
 			cars[i].setColor(1-i/x, i/x, 0);
-			cars[i].drawRays(true);
+			cars[i].drawRays(false);
 			cars[i].setPID(10, 0, 0);
 		}
 		
 		spotlight = new Spotlight(cars[num-1]);
 		spotlight.setLocation(0, 0);
 //		path = PathToDraw.convertPath(Path.importPath("Square_400"));
-//		path = PathToDraw.convertPath(Path.importPath("Complex2"));
+		path = PathToDraw.convertPath(Path.importPath("Complex2"));
 //		path = PathToDraw.convertPath(Path.importPath("T"));
-		path = PathToDraw.convertPath(Path.importPath("BigTrack"));
-//		path = PathToDraw.convertPath(Path.importPath("Rectangle"));
+//		path = PathToDraw.convertPath(Path.importPath("BigTrack"));
 		
 		
 		trackCamera = new View ();
 		view = new View();
 		
-		track = new TrackToDraw(path, 40, Color.red);
+		track = new TrackToDraw(path, 80, Color.red);
 
 		updateTrackView();
 		
