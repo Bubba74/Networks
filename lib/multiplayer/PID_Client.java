@@ -18,10 +18,13 @@ public class PID_Client {
 
 	public static void main (String[] args){
 
+		int port = 9999;
+		if (args.length > 0) port = Integer.parseInt(args[0]);
+
 		pid.setOutputLimits(1);
 
 		try {
-			driver = new DriverClient ("127.0.0.1", 9999);
+			driver = new DriverClient ("127.0.0.1", port);
 			driver.start();
 		} catch (IOException e) {
 			// TODO Auto-generated catch block

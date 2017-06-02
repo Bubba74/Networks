@@ -1,6 +1,20 @@
 package drawing;
 
-import static org.lwjgl.opengl.GL11.*;
+import static org.lwjgl.opengl.GL11.GL_LINES;
+import static org.lwjgl.opengl.GL11.GL_LINE_STRIP;
+import static org.lwjgl.opengl.GL11.GL_QUADS;
+import static org.lwjgl.opengl.GL11.glBegin;
+import static org.lwjgl.opengl.GL11.glColor3d;
+import static org.lwjgl.opengl.GL11.glColor3f;
+import static org.lwjgl.opengl.GL11.glEnd;
+import static org.lwjgl.opengl.GL11.glPopMatrix;
+import static org.lwjgl.opengl.GL11.glPushMatrix;
+import static org.lwjgl.opengl.GL11.glTranslatef;
+import static org.lwjgl.opengl.GL11.glVertex2d;
+import static org.lwjgl.opengl.GL11.glVertex2f;
+
+import java.util.List;
+
 import main.Driver;
 import main.Main;
 
@@ -38,7 +52,7 @@ public class Spotlight {
 		view = new View ();
 	}//Spotlight
 	
-	public void poll (Driver[] cars){
+	public void poll (List<Driver> cars){
 		
 		updateCarView();
 		
@@ -93,14 +107,14 @@ public class Spotlight {
 						my -= cam.y;
 						int closest = 0;
 						int d2 = Integer.MAX_VALUE;
-						for (int i=0; i<cars.length; i++){
-							int dist2 = (int)( (mx-cars[i].getX())*(mx-cars[i].getX()) + (my-cars[i].getY())*(my-cars[i].getY())  );
+						for (int i=0; i<cars.size(); i++){
+							int dist2 = (int)( (mx-cars.get(i).getX())*(mx-cars.get(i).getX()) + (my-cars.get(i).getY())*(my-cars.get(i).getY())  );
 							if (dist2 < d2){
 								closest = i;
 								d2 = dist2;
 							}
 						}
-						car = cars[closest];
+						car = cars.get(closest);
 					}//Button 0 Pressed
 				}//Pressed
 				else {

@@ -98,13 +98,15 @@ public class Driver extends CarToDraw {
 				
 			}
 		} else {
-			speedControl = 1-2*Math.abs(control);
-			speedControl = speedControl*Math.abs(speedControl);
+			speedControl = 0;
+//			speedControl = 1-2*Math.abs(control);
+//			speedControl = speedControl*Math.abs(speedControl);
 		}
 		
-		if (getVel() <= 0.1) speedControl = 0;
-		speedControl = 0;
+		if (getVel() <= 0.1 && speedControl < 0) speedControl = 0;
 		inputs(control, speedControl);
+		
+		if (id == 4) System.out.println("AHHHHH, I THOUGHT THIS WAS A REMOTE CAR!!!!");
 		
 	}//poll
 	
@@ -124,12 +126,22 @@ public class Driver extends CarToDraw {
 	}//update
 
 	public void renderCar (){
+		//Boundary
+		boolean drawBorder = false;
 		if (!aiControlled){
+			glColor3f(1,1,0);
+			drawBorder = true;
+		}
+		if (id == 4){
+			glColor3f(1,1,1);
+			drawBorder = true;
+		}
+		
+		if (drawBorder){
 			glPushMatrix();
 			glTranslated(getX(), getY(), 0);
 			glRotated(180*getZ()/Math.PI, 0, 0, 1);
 			
-			glColor3f(1,1,0);
 			glBegin(GL_POLYGON);
 				glVertex2f(-7, -7);
 				glVertex2f(7, -7);
@@ -140,12 +152,21 @@ public class Driver extends CarToDraw {
 			
 			glPopMatrix();
 		}
+		
 		super.renderCar();
 		
+	}//renderCar
+	
+	public void renderLapCounter (){
 		//Visual to display laps completed
 		int laps = counter.getLapsCompleted();
 		int tens = laps/10;
 		int ones = laps%10;
+		
+		if (tens > 9) tens = 0;
+		if (tens < 0) tens = 0;
+		if (ones < 0) ones = 0;
+		if (ones > 9) ones = 0;
 		Color[] rings = {lapColors[tens], lapColors[ones]};
 		
 		glPushMatrix();
@@ -154,14 +175,6 @@ public class Driver extends CarToDraw {
 		int y = -24;
 		int width = 40;
 		
-//		glColor3d(0.1, 0.1, 0.1);
-//		glBegin(GL_QUADS);
-//			glVertex2f(-width/2, y);
-//			glVertex2f( width/2, y);
-//			glVertex2f( width/2, y+10);
-//			glVertex2f(-width/2, y+10);
-//		glEnd();
-			
 		for (int i=0; i<rings.length; i++){
 			//Set the rings color
 			glColor3d(rings[i].getRed(), rings[i].getGreen(), rings[i].getBlue());
@@ -177,9 +190,8 @@ public class Driver extends CarToDraw {
 		}
 		
 		glPopMatrix();
+	}//renderLapCounter
 	
-		
-	}//renderCar
 	public void renderRays (){
 		super.renderRays();
 	}//renderRays
@@ -216,6 +228,11 @@ public class Driver extends CarToDraw {
 	
 	
 	//------------------Utility Functions--------------------//
+	public void setID (int newID){
+		//It's not really an identifier for the car,
+		//more an identifier for its state.
+		id = newID;
+	}//newId;
 	public int getID (){
 		return id;
 	}

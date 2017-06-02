@@ -7,6 +7,8 @@ import java.awt.Dimension;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.util.ArrayList;
+import java.util.List;
 
 import multiplayer.DriverServer;
 
@@ -37,13 +39,17 @@ public class Main {
 	public static final int WIDTH = (int) screen.getWidth()-10;
 	public static final int HEIGHT = (int) screen.getHeight()-100;
 
-	static double vel = 0.5, acc = 0.001, da = 0.02, rayScope = Math.PI/2;
+	static double vel = 0.4, acc = 0.001, da = 0.02, rayScope = Math.PI/2;
 	static int rays = 32;
 
-	static Driver[] cars;
-	static DriverServer remoteCar = null;
+	static List<Driver> cars = new ArrayList<Driver>();
+	static RacewayServer server;
+	
+	static int raceIndex = -1;
 	static PathToDraw path;
+	static PathToDraw[] paths;
 	static TrackToDraw track;
+	static TrackToDraw[] tracks;
 	
 	static Spotlight spotlight;
 	static View view;
@@ -51,56 +57,40 @@ public class Main {
 	
 	public static void main(String[] args) {
 		
-		int num = 10;
-		double x = num;
-		cars = new Driver[num];
-		for (int i=0; i<num; i++){
-			cars[i] = new Driver(1);
-			cars[i].resetRays(rayScope, rays);
-			cars[i].setVelocities((i+1)*vel/x, acc, da);
-			cars[i].setColor(1-i/x, i/x, 0);
-			cars[i].drawRays(false);
-			cars[i].setPID(10, 0, 0);
-		}
+		paths = new PathToDraw[10];
+		paths[0] = PathToDraw.convertPath(Path.importPath("BigTrack"));
+		paths[1] = PathToDraw.convertPath(Path.importPath("Blob"));
+		paths[2] = PathToDraw.convertPath(Path.importPath("Complex1"));
+		paths[3] = PathToDraw.convertPath(Path.importPath("Complex2"));
+		paths[4] = PathToDraw.convertPath(Path.importPath("Rectangle"));
+		paths[5] = PathToDraw.convertPath(Path.importPath("Square_400"));
+		paths[6] = PathToDraw.convertPath(Path.importPath("Switchbacks"));
+		paths[7] = PathToDraw.convertPath(Path.importPath("T"));
+		paths[8] = PathToDraw.convertPath(Path.importPath("Testing"));
+		paths[9] = PathToDraw.convertPath(Path.importPath("Wonky"));
 		
-		spotlight = new Spotlight(cars[num-1]);
-		spotlight.setLocation(0, 0);
-//		path = PathToDraw.convertPath(Path.importPath("Square_400"));
-//		path = PathToDraw.convertPath(Path.importPath("Complex2"));
-//		path = PathToDraw.convertPath(Path.importPath("T"));
-		path = PathToDraw.convertPath(Path.importPath("BigTrack"));
-//		path = PathToDraw.convertPath(Path.importPath("Rectangle"));
-		
+		tracks = new TrackToDraw[10];
+		for (int i=0; i<10; i++) tracks[i] = new TrackToDraw(paths[i], 40, Color.red);
 		
 		trackCamera = new View ();
 		view = new View();
 		
-		track = new TrackToDraw(path, 40, Color.red);
-
-		updateTrackView();
+		switchToRaceTrack(0);
 		
-		for (Driver car: cars){
-			car.resetTo(track.getStartX(), track.getStartY(), track.getStartA());
+		int num = 10;
+		for (int i=0; i<num; i++){
+			cars.add( newCar(i, num, 1));
 		}
-
-		/*     -------------      */
+		
+		spotlight = new Spotlight(cars.get(4));
+		spotlight.setLocation(0, 0);
+		
 		try {
-			ServerSocket server = new ServerSocket(9999);
-			server.setReuseAddress(true);
-			System.out.println("Waiting for client");
-			
-			Socket client = server.accept();
-			client.setReuseAddress(true);
-			System.out.println("Connected to client at"+client.getRemoteSocketAddress());
-			
-			remoteCar = new DriverServer(client, cars[4], rayScope, rays);
-			remoteCar.start();
-			server.close();
-			
+			server = new RacewayServer(cars, 9999, rayScope, rays);
+			server.start();
 		} catch (IOException e1) {
 			e1.printStackTrace();
 		}
-		///*****    Client Controlled Driver *****////
 		
 		//Xbox Support
 		try {
@@ -137,6 +127,9 @@ public class Main {
 		
 		Display.destroy();
 		Controllers.destroy();
+		
+		System.out.println("Attempting to close server");
+		server.close();
 	
 	}//main
 	
@@ -145,22 +138,34 @@ public class Main {
 		spotlight.poll(cars);
 
 		for (Driver car: cars){
-			if (remoteCar != null){
-				if (car != remoteCar.getDriver())
-					car.poll();
-			} else
-				car.poll();
+			car.poll();
 		}
 		
 		for (Driver car: cars){
-			if (Keyboard.isKeyDown(Keyboard.KEY_EQUALS)) car.accelerate(0.001);
-			if (Keyboard.isKeyDown(Keyboard.KEY_MINUS)) car.accelerate(-0.001);
+			if (Keyboard.isKeyDown(Keyboard.KEY_EQUALS)) {
+				car.accelerate(0.001);
+				vel += 0.001;
+			}
+			if (Keyboard.isKeyDown(Keyboard.KEY_MINUS)) {
+				car.accelerate(-0.001);
+				vel -= 0.001;
+			}
 			if (Keyboard.isKeyDown(Keyboard.KEY_SPACE)) car.stop();
 			if (Keyboard.isKeyDown(Keyboard.KEY_R)) {
 				car.resetTo(track.getStartX(), track.getStartY(), track.getStartA());
 				car.setLapsCompleted(0);
 			}
 		}
+		if (Keyboard.isKeyDown(Keyboard.KEY_1)) switchToRaceTrack(1);
+		if (Keyboard.isKeyDown(Keyboard.KEY_2)) switchToRaceTrack(2);
+		if (Keyboard.isKeyDown(Keyboard.KEY_3)) switchToRaceTrack(3);
+		if (Keyboard.isKeyDown(Keyboard.KEY_4)) switchToRaceTrack(4);
+		if (Keyboard.isKeyDown(Keyboard.KEY_5)) switchToRaceTrack(5);
+		if (Keyboard.isKeyDown(Keyboard.KEY_6)) switchToRaceTrack(6);
+		if (Keyboard.isKeyDown(Keyboard.KEY_7)) switchToRaceTrack(7);
+		if (Keyboard.isKeyDown(Keyboard.KEY_8)) switchToRaceTrack(8);
+		if (Keyboard.isKeyDown(Keyboard.KEY_9)) switchToRaceTrack(9);
+		if (Keyboard.isKeyDown(Keyboard.KEY_0)) switchToRaceTrack(0);
 		
 		while (Keyboard.next()){
 			if (Keyboard.getEventKeyState() && Keyboard.getEventKey() == Keyboard.KEY_F3){
@@ -190,7 +195,6 @@ public class Main {
 	
 	public static void render (){
 		
-		
 		glPushMatrix();
 
 		glScaled(view.sf, view.sf, 1);
@@ -201,8 +205,18 @@ public class Main {
 		
 		track.render();
 
+		for (int i=0; i<cars.size();){
+			if (cars.get(i).getID() == -1)
+				cars.remove(i);
+			else
+				i++;
+		}
+		
 		for (Driver car: cars){
 			car.renderRays();
+		}
+		for (Driver car: cars){
+			car.renderLapCounter();
 		}
 		for (Driver car: cars){
 			car.renderCar();
@@ -215,11 +229,45 @@ public class Main {
 		spotlight.render();
 		
 	}//render
-	
+
+	public static void switchToRaceTrack (int index){
+		if (index == raceIndex) return;
+		
+		raceIndex = index;
+		
+		path = paths[index];
+		track = tracks[index];
+		
+		updateTrackView();
+		for (Driver car: cars){
+			car.resetTo(track.getStartX(), track.getStartY(), track.getStartA());
+			car.setLapsCompleted(0);
+		}
+	}//switchToRaceTrack
 	public static View getView (){
 		return view;
 	}
-
+	public static Driver newCar(int i, double x, int id){
+		
+		Driver driver = new Driver(id);
+		
+		driver.resetRays(rayScope, rays);
+		driver.setVelocities((i+1)*vel/x, acc, da);
+		driver.setColor(1-i/x, i/x, 0);
+		driver.drawRays(false);
+		driver.setPID(10, 0, 0);
+		
+		return driver;
+	}//newCar
+	public static void prepCar (Driver driver){
+		driver.resetRays(rayScope, rays);
+		driver.setVelocities(vel, acc, da);
+		driver.drawRays(false);
+		driver.setPID(10, 0, 0);
+		driver.resetTo(track.getStartX(), track.getStartY(), track.getStartA());
+		
+	}//prepCar
+	
 	public static void updateTrackView (){
 		double[] temp = new double[5];
 		temp[0] = track.getX(); 

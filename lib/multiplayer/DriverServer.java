@@ -8,13 +8,12 @@ import java.net.Socket;
 
 import main.Driver;
 
-public class DriverServer extends Thread {
+public class DriverServer extends Driver implements Runnable {
 
+	private boolean disconnected = false;
 	private Socket remote;
 	private PrintWriter out;
 	private BufferedReader in;
-
-	private Driver driver;
 
 	private double rayScope;
 	private int rayCount;
@@ -31,14 +30,17 @@ public class DriverServer extends Thread {
 		try {
 			ret = in.readLine();
 		} catch (IOException e){
-			e.printStackTrace();
+			System.out.println("Client Disconnected!");
+			disconnected = true;
+			ret = "Definitely not Controls";
+//			e.printStackTrace();
 		}
 		return ret;
 	}//getLine
 
 	public void run () {
 		start = System.nanoTime();
-		while (true){
+		while (!disconnected){
 			if (first){
 				first = false;
 				System.out.println("First");
@@ -50,32 +52,51 @@ public class DriverServer extends Thread {
 				out.flush();
 			}
 			
-			rayDepths = driver.getRayDistances();
+			rayDepths = getRayDistances();
 			sendRayDepths();
 	
 			out.println("Controls");
 			out.flush();
 	
-			if (getLine().equals("Controls")){
+			
+			String input = getLine();
+
+			if (input == null){
+				input = "No command";
+
+				System.out.println("End of stream, this means the client disconnected?!");
+				disconnected = true;
+			}
+				
+			if (input.equals("Controls")){
 				long now = System.nanoTime();
-				System.out.println("New inputs: "+(now-start));
+//				System.out.println("New inputs: "+(now-start));
 				start = now;
 				
 				turnControl = Double.parseDouble(getLine());
 				speedControl = Double.parseDouble(getLine());
-				driver.inputs(turnControl, speedControl);
+				inputs(turnControl, speedControl);
 			}
+		}//while loop
+		
+		System.out.println("Closing Resources");
+		out.close();
+		try {
+			in.close();
+			remote.close();
+		} catch (IOException e) {
+			e.printStackTrace();
 		}
+		setID(-1);
 	}//run
 
-	public DriverServer (Socket clientConnection, Driver localCar, double scope, int count) throws IOException{
-
+	public DriverServer (Socket clientConnection, int id, double scope, int count) throws IOException{
+		super(id);
+		
 		remote = clientConnection;
 		out = new PrintWriter (remote.getOutputStream());
 		in = new BufferedReader (
 				new InputStreamReader (remote.getInputStream()));
-
-		driver = localCar;
 
 		rayScope = scope;
 		rayCount = count;
@@ -93,8 +114,12 @@ public class DriverServer extends Thread {
 			out.println(""+rayDepths[i]);
 	}//sendRayDepths
 	
-	public Driver getDriver(){
-		return driver;
+	public void poll (){
+		//Do nothing
 	}
-
+	
+	public void disconnect (){
+		disconnected = true;
+	}
+	
 }//DriverServer

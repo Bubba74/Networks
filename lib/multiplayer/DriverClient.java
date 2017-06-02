@@ -32,8 +32,14 @@ public class DriverClient extends Thread {
 	}//getLine
 			
 	public void run(){
-		while (true){
+		boolean running = true;
+		while (running){
 			String command = getLine();
+			if (command == null) {
+				running = false;
+				break;
+			}
+			System.out.println(command);
 	
 			if (command.equals("RayScope")){
 				rayScope = Double.parseDouble(getLine());
@@ -54,6 +60,13 @@ public class DriverClient extends Thread {
 				out.println(""+speedControl);
 				out.flush();
 			}
+		}
+		out.close();
+		try {
+			in.close();	
+			socket.close();
+		} catch (IOException e){
+			e.printStackTrace();
 		}
 	}//run
 
