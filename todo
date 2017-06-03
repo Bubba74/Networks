@@ -5,7 +5,7 @@ todo
 * Easily create complex tracks
 - Overlapping? == BIG change.
 	- Zed coordinate or simply multiple tracks?
-! Switching between different tracks with the same car pool.
+* Switching between different tracks with the same car pool.
 
 2. Improve the calculation of intersecting lines and such
 - Represent lines as vectors, and calculate intersections without nasty division by zero
@@ -17,18 +17,26 @@ todo
 
 3. Train neural networks off of PID output? (Variable or PWM?)
 
+5. Easily transform a track between varying thicknesses.
+
+6. TrackCreator should be expanded:
+	- Zoom + other navigation --> MASSIVE tracks.
+
+7. Track preset previews (at the top?)
+
 
 Recommendations
 * Fancy Tracks
 * Backgrounds?
 * Multiplayer
 	- Different server->client relationships
-		- Autonomous Control off of ray depths
-			- Should server send (32-160 double depths) or
-			- Should server send entire track occasionally
+		* Autonomous Control off of ray depths
 		- Manual control (visibility of entire track [and other cars?])
 			- Occasionally: Send entire track
 			- Loop: Send (x,y,z) of all needed cars
+		- For those controlling a car:
+			- COloR control!
+			- Customized Vehicles?
 		- Spectator
 			- Password?
 			- Occasionally: Entire track coordinates

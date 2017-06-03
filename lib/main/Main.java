@@ -39,7 +39,7 @@ public class Main {
 	public static final int WIDTH = (int) screen.getWidth()-10;
 	public static final int HEIGHT = (int) screen.getHeight()-100;
 
-	static double vel = 0.4, acc = 0.001, da = 0.02, rayScope = Math.PI/2;
+	static double vel = 0.2, acc = 0.001, da = 0.02, rayScope = Math.PI/2;
 	static int rays = 32;
 
 	static List<Driver> cars = new ArrayList<Driver>();
@@ -59,13 +59,13 @@ public class Main {
 		
 		paths = new PathToDraw[10];
 		paths[0] = PathToDraw.convertPath(Path.importPath("BigTrack"));
-		paths[1] = PathToDraw.convertPath(Path.importPath("Blob"));
-		paths[2] = PathToDraw.convertPath(Path.importPath("Complex1"));
+		paths[1] = PathToDraw.convertPath(Path.importPath("Twists"));
+		paths[2] = PathToDraw.convertPath(Path.importPath("Swirl"));
 		paths[3] = PathToDraw.convertPath(Path.importPath("Complex2"));
 		paths[4] = PathToDraw.convertPath(Path.importPath("Rectangle"));
 		paths[5] = PathToDraw.convertPath(Path.importPath("Square_400"));
 		paths[6] = PathToDraw.convertPath(Path.importPath("Switchbacks"));
-		paths[7] = PathToDraw.convertPath(Path.importPath("T"));
+		paths[7] = PathToDraw.convertPath(Path.importPath("Biguette"));
 		paths[8] = PathToDraw.convertPath(Path.importPath("Testing"));
 		paths[9] = PathToDraw.convertPath(Path.importPath("Wonky"));
 		
@@ -77,7 +77,7 @@ public class Main {
 		
 		switchToRaceTrack(0);
 		
-		int num = 10;
+		int num = 5;
 		for (int i=0; i<num; i++){
 			cars.add( newCar(i, num, 1));
 		}
@@ -176,6 +176,15 @@ public class Main {
 		
 	}//poll	
 	public static void update (long dt){
+		for (int i=0; i<cars.size();){
+			if (cars.get(i).getID() == -1){
+				if (cars.get(i) == spotlight.getCar()){
+					spotlight.setCar(cars.get(0));
+				}
+				cars.remove(i);
+			} else
+				i++;
+		}
 		
 		for (Driver car: cars){
 			car.update(track, (int)dt);
@@ -205,13 +214,6 @@ public class Main {
 		
 		track.render();
 
-		for (int i=0; i<cars.size();){
-			if (cars.get(i).getID() == -1)
-				cars.remove(i);
-			else
-				i++;
-		}
-		
 		for (Driver car: cars){
 			car.renderRays();
 		}
