@@ -39,7 +39,7 @@ public class Main {
 	public static final int WIDTH = (int) screen.getWidth()-10;
 	public static final int HEIGHT = (int) screen.getHeight()-100;
 
-	static double vel = 0.2, acc = 0.001, da = 0.02, rayScope = Math.PI/2;
+	static double vel = 0.9, acc = 0.001, da = 0.02, rayScope = Math.PI/2;
 	static int rays = 32;
 
 	static List<Driver> cars = new ArrayList<Driver>();
@@ -218,10 +218,10 @@ public class Main {
 			car.renderRays();
 		}
 		for (Driver car: cars){
-			car.renderLapCounter();
+			car.renderCar();
 		}
 		for (Driver car: cars){
-			car.renderCar();
+			car.renderLapCounter();
 		}
 		
 //		glColor3f(1,1,1);

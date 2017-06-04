@@ -8,10 +8,9 @@ import org.lwjgl.input.Keyboard;
 import components.Track;
 
 import drawing.CarToDraw;
+import drawing.Text;
 
 public class Driver extends CarToDraw {
-
-	public static Color[] lapColors = {Color.DARKGREY, Color.RED, Color.ORANGE, Color.YELLOW, Color.GREEN, Color.CYAN, Color.BLUE, Color.MAGENTA, Color.LIGHTGRAY, Color.WHITE};
 
 	private int id;
 	
@@ -159,35 +158,13 @@ public class Driver extends CarToDraw {
 	
 	public void renderLapCounter (){
 		//Visual to display laps completed
-		int laps = counter.getLapsCompleted();
-		int tens = laps/10;
-		int ones = laps%10;
-		
-		if (tens > 9) tens = 0;
-		if (tens < 0) tens = 0;
-		if (ones < 0) ones = 0;
-		if (ones > 9) ones = 0;
-		Color[] rings = {lapColors[tens], lapColors[ones]};
-		
+		String text = ""+counter.getLapsCompleted();
 		glPushMatrix();
-		glTranslated(getX(), getY(), 0);
-		
-		int y = -24;
-		int width = 40;
-		
-		for (int i=0; i<rings.length; i++){
-			//Set the rings color
-			glColor3d(rings[i].getRed(), rings[i].getGreen(), rings[i].getBlue());
+		glTranslated(getX()-Text.getWidth(text)/2, getY()-2, 0);
 
-			glBegin(GL_QUADS);
-				glVertex2f(-width/2, y);
-				glVertex2f( width/2, y);
-				glVertex2f( width/2, y+8);
-				glVertex2f(-width/2, y+8);
-			glEnd();
-			
-			y += 9;
-		}
+		glColor3d(1,1,1);
+		
+		Text.drawText(text);
 		
 		glPopMatrix();
 	}//renderLapCounter

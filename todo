@@ -25,9 +25,10 @@ todo
 7. Track preset previews (at the top?)
 
 8. LapCounter:
-	- DEBUG, Colored Boxes --> Numbers
-	- Don't clutter screen
-		- On TOP of the cars.
+	- DEBUG
+	* Colored Boxes --> Numbers
+	* Don't clutter screen
+		* On TOP of the cars.
 
 9. Different light levels
 	- Morning, Day, Headbeams
@@ -48,6 +49,6 @@ Recommendations
 		- Spectator
 			- Password?
 			- Occasionally: Entire track coordinates
-			- Loop: (x,y,z) of all cars (and rays? <- probably not, that's a lot)
+			- Loop: (x,y,z) of all cars
 * Replace white tracker line with circle over spotlight car
 
