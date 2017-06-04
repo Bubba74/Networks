@@ -1,15 +1,7 @@
 package drawing;
 
-import static org.lwjgl.opengl.GL11.GL_LINES;
-import static org.lwjgl.opengl.GL11.GL_POLYGON;
-import static org.lwjgl.opengl.GL11.glBegin;
-import static org.lwjgl.opengl.GL11.glColor3d;
-import static org.lwjgl.opengl.GL11.glEnd;
-import static org.lwjgl.opengl.GL11.glPopMatrix;
-import static org.lwjgl.opengl.GL11.glPushMatrix;
-import static org.lwjgl.opengl.GL11.glRotated;
-import static org.lwjgl.opengl.GL11.glTranslated;
-import static org.lwjgl.opengl.GL11.glVertex2d;
+import static org.lwjgl.opengl.GL11.*;
+
 import main.Main;
 
 import components.Car;
@@ -105,9 +97,36 @@ public class CarToDraw extends Car {
 			glBegin(GL_POLYGON);
 				glVertex2d(-5,-5);
 				glVertex2d(5,-5);
-				glVertex2d(13,0);
+				glVertex2d(12,-2);
+				glVertex2d(12,2);
 				glVertex2d(5,5);
 				glVertex2d(-5,5);
+			glEnd();
+			
+			//Draw tires
+			glColor3d(0.7, 0.7, 0.7);
+			
+			glBegin(GL_QUADS);
+			glVertex2f(-5, -7);
+			glVertex2f(-1, -7);
+			glVertex2f(-1, -5);
+			glVertex2f(-5, -5);
+
+			glVertex2f(-5,  7);
+			glVertex2f(-1,  7);
+			glVertex2f(-1,  5);
+			glVertex2f(-5,  5);
+
+			glVertex2f( 9, -6);
+			glVertex2f( 5, -6);
+			glVertex2f( 5, -4);
+			glVertex2f( 9, -4);
+
+			glVertex2f( 9,  6);
+			glVertex2f( 5,  6);
+			glVertex2f( 5,  4);
+			glVertex2f( 9,  4);
+			
 			glEnd();
 	
 			glPopMatrix();

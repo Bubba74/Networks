@@ -24,7 +24,7 @@ public class PID_Client {
 		pid.setOutputLimits(1);
 
 		try {
-			driver = new DriverClient ("127.0.0.1", port);
+			driver = new DriverClient ("192.168.1.68", port);
 			driver.start();
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
