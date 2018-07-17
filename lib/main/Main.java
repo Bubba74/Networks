@@ -39,7 +39,7 @@ public class Main {
 	public static final int WIDTH = (int) screen.getWidth()-10;
 	public static final int HEIGHT = (int) screen.getHeight()-100;
 
-	static double vel = 0.9, acc = 0.001, da = 0.02, rayScope = Math.PI/2;
+	static double vel = 0.4, acc = 0.001, da = 0.02, rayScope = Math.PI/2;
 	static int rays = 32;
 
 	static List<Driver> cars = new ArrayList<Driver>();
@@ -62,7 +62,7 @@ public class Main {
 		paths[1] = PathToDraw.convertPath(Path.importPath("Twists"));
 		paths[2] = PathToDraw.convertPath(Path.importPath("Swirl"));
 		paths[3] = PathToDraw.convertPath(Path.importPath("Complex2"));
-		paths[4] = PathToDraw.convertPath(Path.importPath("Rectangle"));
+		paths[4] = PathToDraw.convertPath(Path.importPath("Massive"));
 		paths[5] = PathToDraw.convertPath(Path.importPath("Square_400"));
 		paths[6] = PathToDraw.convertPath(Path.importPath("Switchbacks"));
 		paths[7] = PathToDraw.convertPath(Path.importPath("Biguette"));
@@ -224,8 +224,8 @@ public class Main {
 			car.renderLapCounter();
 		}
 		
-//		glColor3f(1,1,1);
-//		path.render();
+		glColor3f(1,1,1);
+		path.render();
 		
 		glPopMatrix();
 		spotlight.render();

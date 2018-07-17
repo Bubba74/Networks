@@ -19,6 +19,7 @@ public class TrackCreator {
 	
 	public static final int WIDTH = 1800;
 	public static final int HEIGHT = 1000;
+	public static double zoom = 1;
 	
 	private static List<Point> points;
 	private static boolean mousePressed;
@@ -47,7 +48,9 @@ public class TrackCreator {
 	}//main
 	
 	public static void addPoint(){
-		Point p = new Point(Mouse.getX(), HEIGHT-Mouse.getY());
+		int x = (int)(Mouse.getX()/zoom);
+		int y = (int)((HEIGHT-Mouse.getY())/zoom);
+		Point p = new Point(x, y);
 		points.add(p);
 	}//addPoint
 	
@@ -70,7 +73,6 @@ public class TrackCreator {
 	public static void poll (){
 		
 		while (Mouse.next()){
-			
 			if (Mouse.getEventButton() == 0){
 				if (Mouse.getEventButtonState()){
 					mousePressed = true;
@@ -81,11 +83,18 @@ public class TrackCreator {
 				}
 				
 			}//Check button 0
+			
+			int dWheel = Mouse.getDWheel();
+			if (dWheel < 0)
+				zoom *= 0.80;
+			else if (dWheel > 0)
+				zoom *= 1.25;
+			
 		}//Poll through Mouse events
 		
 		if (mousePressed){
-			double lastX = points.get(points.size()-1).getX();
-			double lastY = points.get(points.size()-1).getY();
+			double lastX = points.get(points.size()-1).getX()*zoom;
+			double lastY = points.get(points.size()-1).getY()*zoom;
 			double mx = Mouse.getX();
 			double my = HEIGHT-Mouse.getY();
 			
@@ -119,6 +128,9 @@ public class TrackCreator {
 	
 	public static void render (){
 		
+		glPushMatrix();
+		glScaled(zoom, zoom, 1);
+		
 		glColor3f(1,1,1);
 		glBegin(GL_LINE_STRIP);
 		for (int i=0; i<points.size(); i++){
@@ -128,6 +140,8 @@ public class TrackCreator {
 			glVertex2d(points.get(0).getX(), points.get(0).getY());
 		}
 		glEnd();
+		
+		glPopMatrix();
 		
 	}//render
 	
